@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextGen Leadlogic | Professional Intake Audit</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <style>
+        :root { --primary: #004a99; --danger: #d9534f; --dark: #1a1a1a; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 40px 20px; color: var(--dark); }
+        #intake-form { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; width: 100%; border-top: 8px solid var(--primary); }
+        h2 { color: var(--primary); margin-top: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
+        p { color: #666; margin-bottom: 30px; font-size: 14px; }
+        .hidden { display: none; }
+        .field-group { margin-bottom: 25px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; transition: border 0.3s; box-sizing: border-box; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px rgba(0,74,153,0.1); }
+        #signature-pad { border: 2px dashed #ccc; width: 100%; height: 200px; background: #fff; border-radius: 6px; cursor: crosshair; }
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 20px; transition: background 0.3s; }
+        .btn-submit:hover { background: #003366; }
+        .btn-clear { background: #f8f9fa; color: #666; border: 1px solid #ddd; padding: 8px; border-radius: 4px; cursor: pointer; margin-top: 10px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div id="intake-form">
+    <h2>Legal Discovery & Audit</h2>
+    <p>Secure Intake Portal for High-Value Settlement Verification.</p>
+
+    <div class="field-group">
+        <label>Full Legal Name (As it appears on Medical Records)</label>
+        <input type="text" id="full_name" required placeholder="Njabulo ...">
+    </div>
+
+    <div class="field-group">
+        <label>Primary Litigation Area</label>
+        <select id="case_type" onchange="adaptForm()">
+            <option value="">-- Select Category --</option>
+            <option value="CANCER">Oncology / Cancer (GMC_ICON Tier)</option>
+            <option value="MESH_HIP">Medical Device / Implant (ARCHER Tier)</option>
+            <option value="MILITARY">Camp Lejeune / Veteran (BROWNGREER Tier)</option>
+        </select>
+    </div>
+
+    <div id="lethal-fields">
+        <div id="cancer-logic" class="hidden field-group">
+            <label>Pathology Impression String (Verbatim from Report)</label>
+            <textarea id="pathology_impression" rows="4" placeholder="Example: Stage III Adenocarcinoma identified in biopsy..."></textarea>
+        </div>
+
+        <div id="implant-logic" class="hidden field-group">
+            <label>Revision CPT Code (e.g. 57288) or Model Name</label>
+            <input type="text" id="cpt_code" placeholder="Enter CPT code for surgery">
+            <label style="margin-top:15px;">Manufacturer Lot / Batch Number</label>
+            <input type="text" id="lot_number" placeholder="Located on your implant card">
+        </div>
+
+        <div id="military-logic" class="hidden field-group">
+            <label>DD-214 Box 24 Discharge Characterization</label>
+            <select id="box_24">
+                <option value="Honorable">Honorable</option>
+                <option value="General">General Under Honorable Conditions</option>
+                <option value="Other">Other / Dishonorable</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="field-group">
+        <label>Defense Rebuttal: History of Smoking or Type 2 Diabetes?</label>
+        <select id="defense_scrub">
+            <option value="false">No / Never</option>
+            <option value="true">Yes / Current</option>
+        </select>
+    </div>
+
+    <div class="field-group">
+        <label>Digital Signature (MSA Compliant)</label>
+        <canvas id="signature-pad"></canvas>
+        <button type="button" class="btn-clear" onclick="signaturePad.clear()">Clear Signature</button>
+    </div>
+
+    <button class="btn-submit" onclick="submitToSupabase()">Submit Certified Settlement Audit</button>
+</div>
+
+<script>
+    // INITIALIZE SUPABASE - NJABULO: Replace 'YOUR_SUPABASE_URL' with your real URL from settings
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL'; 
+    const SUPABASE_ANON_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
+    
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // INITIALIZE SIGNATURE
+    const canvas = document.getElementById('signature-pad');
+    const signaturePad = new SignaturePad(canvas);
+
+    // CHAMELEON ADAPTATION
+    function adaptForm() {
+        const type = document.getElementById('case_type').value;
+        document.getElementById('cancer-logic').classList.add('hidden');
+        document.getElementById('implant-logic').classList.add('hidden');
+        document.getElementById('military-logic').classList.add('hidden');
+
+        if (type === 'CANCER') document.getElementById('cancer-logic').classList.remove('hidden');
+        if (type === 'MESH_HIP') document.getElementById('implant-logic').classList.remove('hidden');
+        if (type === 'MILITARY') document.getElementById('military-logic').classList.remove('hidden');
+    }
+
+    // FINAL DATA STRIKE
+    async function submitToSupabase() {
+        if (signaturePad.isEmpty()) {
+            alert("Please provide a signature to certify the medical data.");
+            return;
+        }
+
+        const btn = document.querySelector('.btn-submit');
+        btn.innerText = "Processing Audit...";
+        btn.disabled = true;
+
+        const payload = {
+            full_name: document.getElementById('full_name').value,
+            case_type: document.getElementById('case_type').value,
+            pathology_impression: document.getElementById('pathology_impression').value,
+            lot_number: document.getElementById('lot_number') ? document.getElementById('lot_number').value : null,
+            smoking_history: document.getElementById('defense_scrub').value === 'true',
+            signature_base64: signaturePad.toDataURL(),
+            user_agent: navigator.userAgent,
+            ip_address: "Logged" 
+        };
+
+        const { data, error } = await _supabase
+            .from('settlement_assets')
+            .insert([payload]);
+
+        if (error) {
+            alert('Audit Error: ' + error.message);
+            btn.innerText = "Submit Certified Audit";
+            btn.disabled = false;
+        } else {
+            alert('SUCCESS: Asset secured in NextGen Leadlogic Vault. GMC Audit Score Pending.');
+            location.reload();
+        }
+    }
+</script>
+
+</body>
+</html>
