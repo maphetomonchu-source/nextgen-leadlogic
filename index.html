@@ -172,6 +172,16 @@
     }
 
     function next(s) {
+        // Logic to block Step 1 -> Step 2 if consent is missing
+        const currentStep = document.querySelector('.step.active').id;
+        if (currentStep === 'step1' && s === 2) {
+            const consentChecked = document.getElementById('consent_checkbox').checked;
+            if (!consentChecked) {
+                alert("Please click the checkbox to give consent for automated communications before continuing.");
+                return; // Stop the function here
+            }
+        }
+
         document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
         document.getElementById('step'+s).classList.add('active');
         document.getElementById('fill').style.width = (s * 25) + '%';
@@ -180,7 +190,8 @@
 
     async function submit() {
         if (signaturePad.isEmpty()) { alert("Signature Required."); return; }
-        if (!document.getElementById('consent_checkbox').checked) { alert("Please accept the communication consent."); return; }
+        // Final fallback validation
+        if (!document.getElementById('consent_checkbox').checked) { alert("Please accept the communication consent on Step 1."); return; }
         
         const btn = document.getElementById('submit-btn');
         btn.innerText = "Securing..."; btn.disabled = true;
