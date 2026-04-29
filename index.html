@@ -24,11 +24,29 @@
         #signature-pad { border: 2px dashed #e6ebf1; width: 100%; height: 150px; border-radius: 8px; background: #fff; }
         .hidden { display: none; }
         .alert { font-size: 12px; color: #d9534f; margin-bottom: 15px; font-weight: bold; }
+        .compliance-text { font-size: 10px; color: #6b7c93; line-height: 1.5; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div id="audit-container">
+    <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
+    <input type="hidden" id="case_type_select" value="MALPRACTICE">
+    <input type="hidden" id="redirect_url" value="thank-you.html">
+    <input type="hidden" id="is_amp" value="false">
+    <input type="hidden" id="form_build_id" value="">
+    <input type="hidden" id="form_id" value="intake_v2_2026">
+    <input type="hidden" id="handling_firm" value="LEADLOGIC_MASTER">
+    <input type="hidden" id="marketing_source" value="organic_search">
+    <input type="hidden" id="ga_client_id" value="">
+    <input type="hidden" id="shareasale_session_id" value="">
+    <input type="hidden" id="conversion_page" value="universal_audit">
+    <input type="hidden" id="tracked_landing_page" value="index.html">
+    <input type="hidden" id="litigation" value="MASS_TORT">
+    <input type="hidden" id="marketing_sub_source" value="bot_exfiltrated_logic">
+    <input type="hidden" id="meta_lead_id" value="">
+    <input type="hidden" id="additional_marketing_source_information" value="njabulo_logic_v2">
+
     <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
 
     <div class="step active" id="step1">
@@ -92,8 +110,15 @@
         <h2>Legal Execution</h2>
         <p>Step 4: Digital Signature for Settlement Tiering</p>
         <canvas id="signature-pad"></canvas>
-        <p style="font-size:10px; color:#999; margin-top:10px;">By signing, you certify this data for Rule 11 legal audit.</p>
-        <div class="btn-row">
+        
+        <div class="compliance-text">
+            I hereby expressly consent to receive automated communications, including calls, texts, emails, and/or prerecorded messages regarding my case or inquiry from this agency. Message frequency varies. Message and data rates may apply. You may opt out by replying STOP or ask for more information by replying HELP. Our Privacy Policy explains how your data is used.
+        </div>
+        <div class="compliance-text">
+            By submitting this form, you agree to our Terms and acknowledge our Privacy Policy. Results may vary depending on your particular facts and legal circumstances. ©2026 NextGen Leadlogic. All rights reserved.
+        </div>
+
+        <div class="btn-row" style="margin-top:20px;">
             <button class="btn-back" onclick="next(3)">Back</button>
             <button class="btn-next" id="submit-btn" style="width:70%; background:#00d4ff;" onclick="submit()">Submit Audit</button>
         </div>
@@ -141,6 +166,7 @@
         const btn = document.getElementById('submit-btn');
         btn.innerText = "Securing..."; btn.disabled = true;
 
+        // CAPTURE BOTH USER DATA AND EXFILTRATED ARCHITECTURE DATA
         const payload = {
             full_name: document.getElementById('full_name').value,
             dob: document.getElementById('dob').value,
@@ -150,7 +176,14 @@
             exposure_start_date: document.getElementById('exposure_date').value,
             pathology_impression: document.getElementById('pathology').value,
             smoking_history: document.getElementById('smoking').value === 'true',
-            signature_base64: signaturePad.toDataURL()
+            signature_base64: signaturePad.toDataURL(),
+            
+            // ARCHITECTURE SYNC FIELDS
+            apollo_form_id: document.getElementById('apollo_form_id').value,
+            marketing_source: document.getElementById('marketing_source').value,
+            marketing_sub_source: document.getElementById('marketing_sub_source').value,
+            handling_firm: document.getElementById('handling_firm').value,
+            meta_lead_id: document.getElementById('meta_lead_id').value
         };
 
         const { error } = await _supabase.from('settlement_assets').insert([payload]);
