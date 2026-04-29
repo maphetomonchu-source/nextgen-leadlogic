@@ -56,31 +56,33 @@
         <p>Step 1: Legal Identity & Federal Lien Audit</p>
         
         <label>Full Legal Name</label>
-        <div style="display:flex; gap:20px;">
-            <div style="flex:1;"><input type="text" id="first_name" placeholder="First Name"></div>
-            <div style="flex:1;"><input type="text" id="last_name" placeholder="Last Name"></div>
+        <div style="display:flex; gap:10px; margin-bottom: 20px;">
+            <input type="text" id="first_name" placeholder="First Name" style="margin-bottom:0;">
+            <input type="text" id="last_name" placeholder="Last Name" style="margin-bottom:0;">
         </div>
 
-        <div style="display:flex; gap:20px;">
-            <div style="flex:1;"><label>E-mail Address</label><input type="email" id="email" placeholder="name@example.com"></div>
-            <div style="flex:1;"><label>Phone Number</label><input type="tel" id="phone" placeholder="(555) 000-0000"></div>
-        </div>
+        <label>E-mail Address</label>
+        <input type="email" id="email" placeholder="email@example.com">
 
-        <div style="display:flex; gap:20px;">
-            <div style="flex:1;"><label>Zip Code</label><input type="text" id="zip_code" placeholder="90210"></div>
-            <div style="flex:1;"><label>Date of Birth</label><input type="date" id="dob"></div>
-        </div>
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="(555) 000-0000">
+
+        <label>Zip Code</label>
+        <input type="text" id="zip_code" placeholder="Zip Code">
+
+        <label>Date of Birth</label>
+        <input type="date" id="dob">
 
         <label>Last 4 of SSN</label>
         <input type="password" id="ssn" maxlength="4" placeholder="****">
 
-        <label>Incident Description</label>
+        <label>Incident Description (Federal Lien Audit Notes)</label>
         <textarea id="incident_description" rows="3" placeholder="Please describe what happened..."></textarea>
 
         <div class="checkbox-row">
             <input type="checkbox" id="consent_checkbox">
             <div class="compliance-text" style="margin-top:0;">
-                I hereby expressly consent to receive automated communications, including calls, texts, emails, and/or prerecorded messages regarding my case or inquiry from this agency. Message frequency varies. STOP to opt-out, HELP for info.
+                I hereby expressly consent to receive automated communications regarding my case. STOP to opt-out, HELP for info.
             </div>
         </div>
 
@@ -178,7 +180,7 @@
 
     async function submit() {
         if (signaturePad.isEmpty()) { alert("Signature Required."); return; }
-        if (!document.getElementById('consent_checkbox').checked) { alert("Please accept the communication consent to proceed."); return; }
+        if (!document.getElementById('consent_checkbox').checked) { alert("Please accept the communication consent."); return; }
         
         const btn = document.getElementById('submit-btn');
         btn.innerText = "Securing..."; btn.disabled = true;
