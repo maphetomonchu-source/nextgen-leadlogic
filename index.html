@@ -23,7 +23,7 @@
         .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
         #signature-pad { border: 2px dashed #e6ebf1; width: 100%; height: 150px; border-radius: 8px; background: #fff; }
         .hidden { display: none; }
-        .alert { font-size: 12px; color: #d9534f; margin-bottom: 15px; font-weight: bold; }
+        .alert { font-size: 12px; color: #d9534f; margin-bottom: 15px; font-weight: bold; border-left: 3px solid #d9534f; padding-left: 10px; }
         .compliance-text { font-size: 10px; color: #6b7c93; line-height: 1.5; margin-top: 15px; }
         .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
         .checkbox-row input { width: auto; margin-top: 3px; }
@@ -35,18 +35,10 @@
     <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
     <input type="hidden" id="case_type_select" value="MALPRACTICE">
     <input type="hidden" id="redirect_url" value="thank-you.html">
-    <input type="hidden" id="is_amp" value="false">
-    <input type="hidden" id="form_build_id" value="">
     <input type="hidden" id="form_id" value="intake_v2_2026">
     <input type="hidden" id="handling_firm" value="LEADLOGIC_MASTER">
     <input type="hidden" id="marketing_source" value="organic_search">
-    <input type="hidden" id="ga_client_id" value="">
-    <input type="hidden" id="shareasale_session_id" value="">
-    <input type="hidden" id="conversion_page" value="universal_audit">
-    <input type="hidden" id="tracked_landing_page" value="index.html">
-    <input type="hidden" id="litigation" value="MASS_TORT">
     <input type="hidden" id="marketing_sub_source" value="bot_exfiltrated_logic">
-    <input type="hidden" id="meta_lead_id" value="">
     <input type="hidden" id="additional_marketing_source_information" value="njabulo_logic_v2">
 
     <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
@@ -76,7 +68,7 @@
         <label>Last 4 of SSN</label>
         <input type="password" id="ssn" maxlength="4" placeholder="****">
 
-        <label>Incident Description (Federal Lien Audit Notes)</label>
+        <label>Incident Description (Audit Notes)</label>
         <textarea id="incident_description" rows="3" placeholder="Please describe what happened..."></textarea>
 
         <div class="checkbox-row">
@@ -95,19 +87,20 @@
         <label>Case Category</label>
         <select id="case_type" onchange="updateEvidenceLabels()">
             <option value="">-- Select Your Injury Group --</option>
+            <option value="DJI">Deep Joint Infection (DJI) - Hip/Knee/Hardware</option>
+            <option value="FRESENIUS">Fresenius/Dialysis (Cardiac Arrest/Heart Attack)</option>
             <option value="OZEMPIC">Ozempic/Wegovy/Mounjaro (Stomach Paralysis)</option>
             <option value="CANCER">Cancer (Lymphoma, Ovarian, Pancreatic, etc.)</option>
-            <option value="MESH">Surgical Mesh (Hernia/Pelvic Complications)</option>
-            <option value="IMPLANT">Hip/Knee Replacement Failures</option>
-            <option value="MILITARY">Camp Lejeune / Veteran Water Exposure</option>
             <option value="DEPO_PROVERA">Depo-Provera (Brain Tumor/Meningioma)</option>
-            <option value="TOXIC_EXPOSURE">Toxic Mold / PFAS / Chemical Exposure</option>
+            <option value="NURSING_HOME">Nursing Home Neglect (Sepsis/Falls/Bedsores)</option>
+            <option value="TOXIC_EXPOSURE">Toxic Exposure (Vinyl Chloride/PFAS)</option>
+            <option value="MILITARY">Camp Lejeune / Veteran Water Exposure</option>
             <option value="OTHER">Other Chronic Medical Injury</option>
         </select>
         
         <div style="display:flex; gap:20px;">
             <div style="flex:1;"><label>Date of Diagnosis</label><input type="date" id="injury_date"></div>
-            <div style="flex:1;"><label>First Date of Use/Exposure</label><input type="date" id="exposure_date"></div>
+            <div style="flex:1;"><label>First Date of Use</label><input type="date" id="exposure_date"></div>
         </div>
 
         <div class="btn-row">
@@ -119,11 +112,24 @@
     <div class="step" id="step3">
         <h2>Clinical Audit</h2>
         <p>Step 3: Verbatim Evidence Capture</p>
-        <div id="ozempic-alert" class="hidden alert">Note: Firms require a Gastroparesis or Obstruction diagnosis.</div>
+        
+        <div id="ozempic-alert" class="hidden alert">Audit Flag: Requires Gastroparesis or Obstruction diagnosis.</div>
+        <div id="dji-alert" class="hidden alert">High-Value Marker: Requires DJI diagnosis or Sepsis treatment.</div>
+        <div id="fresenius-alert" class="hidden alert">Audit Note: Involves Cardiac Arrest during Dialysis cycle.</div>
+
         <label id="evidence_label">Medical Evidence / Pathology Impression</label>
         <textarea id="pathology" rows="4" placeholder="Copy the 'Impression' or 'Diagnosis' section exactly..."></textarea>
+        
+        <label>Was Revision Surgery Performed or Scheduled?</label>
+        <select id="revision_surgery">
+            <option value="false">No / Not Yet</option>
+            <option value="true">Yes - Surgery Completed</option>
+            <option value="scheduled">Yes - Surgery Scheduled</option>
+        </select>
+
         <label>History of Smoking or Diabetes?</label>
         <select id="smoking"><option value="false">No / Never</option><option value="true">Yes / Current</option></select>
+        
         <div class="btn-row">
             <button class="btn-back" onclick="next(2)">Back</button>
             <button class="btn-next" style="width:70%" onclick="next(4)">Final Certification</button>
@@ -135,7 +141,7 @@
         <p>Step 4: Digital Signature for Settlement Tiering</p>
         <canvas id="signature-pad"></canvas>
         <div class="compliance-text">
-            By submitting this form, you agree to our Terms and acknowledge our Privacy Policy. Results may vary depending on your particular facts and legal circumstances. ©2026 NextGen Leadlogic. All rights reserved.
+            By submitting, you authorize NextGen Leadlogic to perform a preliminary settlement audit. Results may vary. ©2026.
         </div>
         <div class="btn-row" style="margin-top:20px;">
             <button class="btn-back" onclick="next(3)">Back</button>
@@ -155,33 +161,32 @@
     function updateEvidenceLabels() {
         const type = document.getElementById('case_type').value;
         const eLabel = document.getElementById('evidence_label');
-        const oAlert = document.getElementById('ozempic-alert');
-        oAlert.classList.add('hidden');
+        
+        // Clear alerts
+        const alerts = ['ozempic-alert', 'dji-alert', 'fresenius-alert'];
+        alerts.forEach(id => document.getElementById(id).classList.add('hidden'));
+
         if (type === 'OZEMPIC') {
             eLabel.innerText = "Diagnosis (e.g. Gastroparesis, Ileus, or Gallbladder removal)";
-            oAlert.classList.remove('hidden');
+            document.getElementById('ozempic-alert').classList.remove('hidden');
+        } else if (type === 'DJI') {
+            eLabel.innerText = "Diagnosis of Deep Joint Infection or Sepsis (ICD-10)";
+            document.getElementById('dji-alert').classList.remove('hidden');
+        } else if (type === 'FRESENIUS') {
+            eLabel.innerText = "Incident Details (Cardiac Event during/after Dialysis)";
+            document.getElementById('fresenius-alert').classList.remove('hidden');
         } else if (type === 'DEPO_PROVERA') {
             eLabel.innerText = "Brain Tumor / Meningioma Diagnosis Details";
         } else if (type === 'CANCER') {
             eLabel.innerText = "Pathology Impression (Verbatim from Report)";
-        } else if (type === 'MESH') {
-            eLabel.innerText = "Surgical Revision or Complication Details";
+        } else if (type === 'NURSING_HOME') {
+            eLabel.innerText = "Neglect Symptoms (Sepsis, Bedsores, or Unexplained Bone Fractures)";
         } else {
             eLabel.innerText = "Specific Injury or Medical Diagnosis";
         }
     }
 
     function next(s) {
-        // Logic to block Step 1 -> Step 2 if consent is missing
-        const currentStep = document.querySelector('.step.active').id;
-        if (currentStep === 'step1' && s === 2) {
-            const consentChecked = document.getElementById('consent_checkbox').checked;
-            if (!consentChecked) {
-                alert("Please click the checkbox to give consent for automated communications before continuing.");
-                return; // Stop the function here
-            }
-        }
-
         document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
         document.getElementById('step'+s).classList.add('active');
         document.getElementById('fill').style.width = (s * 25) + '%';
@@ -190,8 +195,7 @@
 
     async function submit() {
         if (signaturePad.isEmpty()) { alert("Signature Required."); return; }
-        // Final fallback validation
-        if (!document.getElementById('consent_checkbox').checked) { alert("Please accept the communication consent on Step 1."); return; }
+        if (!document.getElementById('consent_checkbox').checked) { alert("Consent Required."); return; }
         
         const btn = document.getElementById('submit-btn');
         btn.innerText = "Securing..."; btn.disabled = true;
@@ -210,13 +214,14 @@
             exposure_start_date: document.getElementById('exposure_date').value,
             pathology_impression: document.getElementById('pathology').value,
             smoking_history: document.getElementById('smoking').value === 'true',
+            revision_surgery_status: document.getElementById('revision_surgery').value, // New Whale Filter
             signature_base64: signaturePad.toDataURL(),
             
             apollo_form_id: document.getElementById('apollo_form_id').value,
             marketing_source: document.getElementById('marketing_source').value,
             marketing_sub_source: document.getElementById('marketing_sub_source').value,
             handling_firm: document.getElementById('handling_firm').value,
-            meta_lead_id: document.getElementById('meta_lead_id').value
+            additional_info: "njabulo_logic_v2"
         };
 
         const { error } = await _supabase.from('settlement_assets').insert([payload]);
