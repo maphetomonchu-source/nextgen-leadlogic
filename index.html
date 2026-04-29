@@ -25,6 +25,8 @@
         .hidden { display: none; }
         .alert { font-size: 12px; color: #d9534f; margin-bottom: 15px; font-weight: bold; }
         .compliance-text { font-size: 10px; color: #6b7c93; line-height: 1.5; margin-top: 15px; }
+        .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
+        .checkbox-row input { width: auto; margin-top: 3px; }
     </style>
 </head>
 <body>
@@ -51,13 +53,36 @@
 
     <div class="step active" id="step1">
         <h2>Claimant Verification</h2>
-        <p>Step 1: Legal Identity & Federal Lien Audit</p>
-        <label>Full Legal Name</label>
-        <input type="text" id="full_name" placeholder="As shown on Medical ID">
+        <p>Step 1: Legal Identity & Contact Audit</p>
+        
         <div style="display:flex; gap:20px;">
-            <div style="flex:1;"><label>Date of Birth</label><input type="date" id="dob"></div>
-            <div style="flex:1;"><label>Last 4 of SSN</label><input type="password" id="ssn" maxlength="4" placeholder="****"></div>
+            <div style="flex:1;"><label>First Name</label><input type="text" id="first_name" placeholder="John"></div>
+            <div style="flex:1;"><label>Last Name</label><input type="text" id="last_name" placeholder="Doe"></div>
         </div>
+
+        <div style="display:flex; gap:20px;">
+            <div style="flex:1;"><label>E-mail Address</label><input type="email" id="email" placeholder="name@example.com"></div>
+            <div style="flex:1;"><label>Phone Number</label><input type="tel" id="phone" placeholder="(555) 000-0000"></div>
+        </div>
+
+        <div style="display:flex; gap:20px;">
+            <div style="flex:1;"><label>Zip Code</label><input type="text" id="zip_code" placeholder="90210"></div>
+            <div style="flex:1;"><label>Date of Birth</label><input type="date" id="dob"></div>
+        </div>
+
+        <label>Last 4 of SSN</label>
+        <input type="password" id="ssn" maxlength="4" placeholder="****">
+
+        <label>Incident Description</label>
+        <textarea id="incident_description" rows="3" placeholder="Please describe what happened..."></textarea>
+
+        <div class="checkbox-row">
+            <input type="checkbox" id="consent_checkbox">
+            <div class="compliance-text" style="margin-top:0;">
+                I hereby expressly consent to receive automated communications, including calls, texts, emails, and/or prerecorded messages regarding my case or inquiry from this agency. Message frequency varies. STOP to opt-out, HELP for info.
+            </div>
+        </div>
+
         <button class="btn-next" onclick="next(2)">Continue to Case Selection</button>
     </div>
 
@@ -91,15 +116,11 @@
     <div class="step" id="step3">
         <h2>Clinical Audit</h2>
         <p>Step 3: Verbatim Evidence Capture</p>
-        
         <div id="ozempic-alert" class="hidden alert">Note: Firms require a Gastroparesis or Obstruction diagnosis.</div>
-        
         <label id="evidence_label">Medical Evidence / Pathology Impression</label>
         <textarea id="pathology" rows="4" placeholder="Copy the 'Impression' or 'Diagnosis' section exactly..."></textarea>
-        
         <label>History of Smoking or Diabetes?</label>
         <select id="smoking"><option value="false">No / Never</option><option value="true">Yes / Current</option></select>
-        
         <div class="btn-row">
             <button class="btn-back" onclick="next(2)">Back</button>
             <button class="btn-next" style="width:70%" onclick="next(4)">Final Certification</button>
@@ -110,14 +131,9 @@
         <h2>Legal Execution</h2>
         <p>Step 4: Digital Signature for Settlement Tiering</p>
         <canvas id="signature-pad"></canvas>
-        
-        <div class="compliance-text">
-            I hereby expressly consent to receive automated communications, including calls, texts, emails, and/or prerecorded messages regarding my case or inquiry from this agency. Message frequency varies. Message and data rates may apply. You may opt out by replying STOP or ask for more information by replying HELP. Our Privacy Policy explains how your data is used.
-        </div>
         <div class="compliance-text">
             By submitting this form, you agree to our Terms and acknowledge our Privacy Policy. Results may vary depending on your particular facts and legal circumstances. ©2026 NextGen Leadlogic. All rights reserved.
         </div>
-
         <div class="btn-row" style="margin-top:20px;">
             <button class="btn-back" onclick="next(3)">Back</button>
             <button class="btn-next" id="submit-btn" style="width:70%; background:#00d4ff;" onclick="submit()">Submit Audit</button>
@@ -137,9 +153,7 @@
         const type = document.getElementById('case_type').value;
         const eLabel = document.getElementById('evidence_label');
         const oAlert = document.getElementById('ozempic-alert');
-
         oAlert.classList.add('hidden');
-
         if (type === 'OZEMPIC') {
             eLabel.innerText = "Diagnosis (e.g. Gastroparesis, Ileus, or Gallbladder removal)";
             oAlert.classList.remove('hidden');
@@ -163,14 +177,20 @@
 
     async function submit() {
         if (signaturePad.isEmpty()) { alert("Signature Required."); return; }
+        if (!document.getElementById('consent_checkbox').checked) { alert("Please accept the communication consent to proceed."); return; }
+        
         const btn = document.getElementById('submit-btn');
         btn.innerText = "Securing..."; btn.disabled = true;
 
-        // CAPTURE BOTH USER DATA AND EXFILTRATED ARCHITECTURE DATA
         const payload = {
-            full_name: document.getElementById('full_name').value,
+            first_name: document.getElementById('first_name').value,
+            last_name: document.getElementById('last_name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            zip_code: document.getElementById('zip_code').value,
             dob: document.getElementById('dob').value,
             ssn_last_four: document.getElementById('ssn').value,
+            incident_description: document.getElementById('incident_description').value,
             case_type: document.getElementById('case_type').value,
             injury_date: document.getElementById('injury_date').value,
             exposure_start_date: document.getElementById('exposure_date').value,
@@ -178,7 +198,6 @@
             smoking_history: document.getElementById('smoking').value === 'true',
             signature_base64: signaturePad.toDataURL(),
             
-            // ARCHITECTURE SYNC FIELDS
             apollo_form_id: document.getElementById('apollo_form_id').value,
             marketing_source: document.getElementById('marketing_source').value,
             marketing_sub_source: document.getElementById('marketing_sub_source').value,
@@ -187,7 +206,7 @@
         };
 
         const { error } = await _supabase.from('settlement_assets').insert([payload]);
-        if (error) { alert(error.message); btn.disabled = false; }
+        if (error) { alert(error.message); btn.disabled = false; btn.innerText = "Submit Audit"; }
         else { alert("AUDIT SECURED."); location.reload(); }
     }
 </script>
