@@ -24,8 +24,8 @@
         .btn-next { background: var(--primary); color: white; width: 100%; }
         .btn-next:hover { background: #153e63; }
         .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
-        #signature-pad { border: 2px dashed #e6ebf1; width: 100%; height: 180px; border-radius: 8px; background: #fff; cursor: crosshair; }
-        .compliance-text { font-size: 10px; color: #6b7c93; line-height: 1.5; margin-top: 15px; }
+        #signature-pad { border: 2px solid #0a2540; width: 100%; height: 200px; border-radius: 8px; background: #ffffff; cursor: crosshair; }
+        .compliance-text { font-size: 11px; color: #6b7c93; line-height: 1.6; margin-top: 15px; text-align: justify; }
         .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
         .checkbox-row input { width: auto; margin: 0; margin-top: 3px; }
         .niche-question-block { background: #f8fafd; border: 1px solid #e6ebf1; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
@@ -70,7 +70,9 @@
         <textarea id="incident_description" rows="3" placeholder="Please describe what happened..."></textarea>
         <div class="checkbox-row">
             <input type="checkbox" id="consent_checkbox">
-            <div class="compliance-text">I hereby expressly consent to receive automated communications regarding my case. STOP to opt-out, HELP for info.</div>
+            <div class="compliance-text">
+                <strong>Express Consent:</strong> I hereby provide my express written consent to be contacted by NextGen Leadlogic and its legal partners, including Morgan & Morgan, regarding my legal inquiry. I agree to receive communications via live agent, artificial or prerecorded voice messages, and automated SMS/MMS text messages even if I am on a Do Not Call registry. Msg & data rates may apply. Text STOP to opt-out.
+            </div>
         </div>
         <button class="btn-next" onclick="validateAndNext(1, 2)">Continue to Case Selection</button>
     </div>
@@ -121,12 +123,14 @@
         <p>Step 4: Digital Signature for Settlement Tiering</p>
         <div style="position: relative; margin-bottom: 10px;">
             <canvas id="signature-pad"></canvas>
-            <button type="button" onclick="signaturePad.clear()" style="position: absolute; right: 10px; bottom: 10px; padding: 5px 10px; font-size: 10px; background: #eee; color: #666;">Clear</button>
+            <button type="button" onclick="signaturePad.clear()" style="position: absolute; right: 10px; bottom: 10px; padding: 8px 15px; font-size: 12px; background: #f1f1f1; color: #333; border-radius: 4px; border: 1px solid #ccc;">Clear Signature</button>
         </div>
-        <div class="compliance-text">By submitting, you authorize NextGen Leadlogic to perform a preliminary settlement audit. Results may vary. ©2026.</div>
+        <div class="compliance-text">
+            <strong>Legal Certification & Authorization:</strong> By signing and submitting this audit, I electronically certify that the information provided is true and accurate to the best of my knowledge. I authorize NextGen Leadlogic to perform a preliminary settlement audit and share my data with Morgan & Morgan for the purpose of evaluating my potential claim. I understand that this submission does not constitute an attorney-client relationship until a formal retainer is signed, and that results of this audit are preliminary and subject to full medical record verification. ©2026.
+        </div>
         <div class="btn-row" style="margin-top:20px;">
             <button class="btn-back" onclick="next(3)">Back</button>
-            <button class="btn-next" id="submit-btn" style="width:70%; background:#00d4ff;" onclick="submit()">Submit Audit</button>
+            <button class="btn-next" id="submit-btn" style="width:70%; background:#00d4ff;" onclick="submit()">Submit Final Audit</button>
         </div>
     </div>
 </div>
@@ -141,7 +145,13 @@
         _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         if (canvas) {
-            signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)', penColor: 'rgb(10, 37, 64)' });
+            // Updated penMinWidth and penMaxWidth for visibility
+            signaturePad = new SignaturePad(canvas, { 
+                backgroundColor: 'rgb(255, 255, 255)', 
+                penColor: 'rgb(10, 37, 64)',
+                minWidth: 1.5,
+                maxWidth: 4.5
+            });
         }
     } catch (e) { console.error("Initialization error:", e); }
 
@@ -154,8 +164,7 @@
         signaturePad.clear(); 
     }
     window.addEventListener("resize", resizeCanvas); 
-    resizeCanvas();
-
+    
     const litigationQuestions = {
         'DJI': [
             { id: 'dji_p1', q: 'Primary Surgery: Did you undergo a hip or knee replacement using a DJI implant?' },
@@ -244,7 +253,7 @@
                 `;
                 container.appendChild(wrapper);
             });
-            return true; // Return true if successful
+            return true;
         } else {
             container.innerHTML = "<p style='color:red; font-size:12px;'>Error: No questions found. Please select a category.</p>";
             return false;
@@ -256,12 +265,11 @@
             const fName = document.getElementById('first_name').value;
             const email = document.getElementById('email').value;
             const consent = document.getElementById('consent_checkbox').checked;
-            if (!fName || !email || !consent) { alert("Please complete name, email, and consent."); return; }
+            if (!fName || !email || !consent) { alert("Please complete name, email, and provide your express consent."); return; }
         }
         if (current === 2) {
             const caseVal = document.getElementById('case_type').value;
             if (!caseVal) { alert("Please select a Case Category."); return; }
-            // Force generate questions immediately
             const success = generateDynamicQuestions();
             if (!success) return; 
         }
@@ -274,22 +282,22 @@
         const targetStep = document.getElementById('step' + s);
         if (targetStep) {
             targetStep.classList.add('active');
-        } else {
-            console.error("Step " + s + " not found!");
-            return;
         }
         
         const fill = document.getElementById('fill');
         if (fill) fill.style.width = (s * 25) + '%';
         
         window.scrollTo(0,0);
-        if (s === 4) setTimeout(resizeCanvas, 50);
+        // Important: Call resizeCanvas when reaching Step 4 to fix visibility/alignment
+        if (s === 4) {
+            setTimeout(resizeCanvas, 100);
+        }
     }
 
     async function submit() {
-        if (!signaturePad || signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
+        if (!signaturePad || signaturePad.isEmpty()) { alert("Digital Signature Required to verify audit."); return; }
         const btn = document.getElementById('submit-btn');
-        btn.innerText = "Processing Audit..."; btn.disabled = true;
+        btn.innerText = "Securing Audit Data..."; btn.disabled = true;
 
         const dynamicData = {};
         document.querySelectorAll('.dynamic-answer').forEach(el => {
@@ -313,12 +321,12 @@
         try {
             const { error } = await _supabase.from('settlement_assets').insert([payload]);
             if (error) throw error;
-            alert("AUDIT SECURED."); 
+            alert("AUDIT SECURED AND TRANSMITTED."); 
             location.reload();
         } catch (err) {
             alert("Submission Error: " + err.message); 
             btn.disabled = false; 
-            btn.innerText = "Submit Audit";
+            btn.innerText = "Submit Final Audit";
         }
     }
 </script>
