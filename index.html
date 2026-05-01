@@ -152,8 +152,6 @@
                 minWidth: 1.5,
                 maxWidth: 4.5
             });
-            // Initial call to set dimensions
-            resizeCanvas();
         } catch (e) { console.error("Init Error:", e); }
     };
 
@@ -165,7 +163,6 @@
         canvas.getContext("2d").scale(ratio, ratio); 
         signaturePad.clear(); 
     }
-    
     window.addEventListener("resize", resizeCanvas); 
 
     const litigationQuestions = {
@@ -274,10 +271,7 @@
         document.getElementById('step' + s).classList.add('active');
         document.getElementById('fill').style.width = (s * 25) + '%';
         window.scrollTo(0,0);
-        // CRITICAL FIX: Signature Pad requires correct offsetWidth which is only available when visible
-        if (s === 4) {
-            setTimeout(resizeCanvas, 200);
-        }
+        if (s === 4) setTimeout(resizeCanvas, 200);
     }
 
     async function submit() {
