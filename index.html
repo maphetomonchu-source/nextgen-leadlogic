@@ -33,7 +33,7 @@
             border: 2px solid #0a2540;
             border-radius: 8px;
             background: #ffffff;
-            touch-action: none; /* Critical for mobile signing[cite: 2] */
+            touch-action: none; /* Critical for mobile signing */
             margin-bottom: 10px;
         }
         #signature-pad {
@@ -161,8 +161,8 @@
     let _supabase, signaturePad;
     const canvas = document.getElementById('signature-pad');
 
-    // SUPABASE CONFIG[cite: 1]
-    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    // REPAIRED SUPABASE CONFIG[cite: 1]
+    const SUPABASE_URL = 'https://xjzaugpmhbkwmzbnhlqu.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
 
     window.onload = function() {
@@ -179,7 +179,7 @@
     };
 
     /**
-     * REPAIRED SIGNATURE CALIBRATION[cite: 2]
+     * REPAIRED SIGNATURE CALIBRATION
      */
     function resizeCanvas() {
         if (!canvas || !signaturePad) return;
@@ -305,7 +305,7 @@
         document.getElementById('fill').style.width = (s * 25) + '%';
         window.scrollTo(0,0);
         
-        // REPAIRED NAVIGATION LOGIC: Trigger resize only when visible[cite: 2]
+        // REPAIRED NAVIGATION LOGIC: Trigger resize only when visible
         if (s === 4) {
             setTimeout(resizeCanvas, 150);
         }
