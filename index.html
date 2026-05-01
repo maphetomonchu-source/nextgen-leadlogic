@@ -36,7 +36,6 @@
 <body>
 
 <div id="audit-container">
-    <!-- SYSTEM LOGIC DATA -->
     <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
     <input type="hidden" id="case_type_select" value="MALPRACTICE">
     <input type="hidden" id="redirect_url" value="thank-you.html">
@@ -107,12 +106,9 @@
     <div class="step" id="step3">
         <h2>Clinical Audit</h2>
         <p>Step 3: Verbatim Evidence Capture</p>
-        
         <div id="dynamic-questions-container"></div>
-
         <label>Medical Evidence / Pathology Impression</label>
         <textarea id="pathology" rows="4" placeholder="Copy the 'Impression' or 'Diagnosis' section exactly..."></textarea>
-        
         <div class="btn-row">
             <button class="btn-back" onclick="next(2)">Back</button>
             <button class="btn-next" style="width:70%" onclick="next(4)">Final Certification</button>
@@ -136,18 +132,32 @@
 </div>
 
 <script>
-    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-    const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // Global initializations with safety checks
+    let _supabase, signaturePad;
     const canvas = document.getElementById('signature-pad');
-    const signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)', penColor: 'rgb(10, 37, 64)' });
+
+    try {
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
+        _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        if (canvas) {
+            signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)', penColor: 'rgb(10, 37, 64)' });
+        }
+    } catch (e) {
+        console.error("Initialization error:", e);
+    }
 
     function resizeCanvas() {
+        if (!canvas || !signaturePad) return;
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio; canvas.height = canvas.offsetHeight * ratio;
-        canvas.getContext("2d").scale(ratio, ratio); signaturePad.clear(); 
+        canvas.width = canvas.offsetWidth * ratio; 
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio); 
+        signaturePad.clear(); 
     }
-    window.addEventListener("resize", resizeCanvas); resizeCanvas();
+    window.addEventListener("resize", resizeCanvas); 
+    resizeCanvas();
 
     const litigationQuestions = {
         'DJI': [
@@ -220,6 +230,7 @@
     function generateDynamicQuestions() {
         const selectedType = document.getElementById('case_type').value;
         const container = document.getElementById('dynamic-questions-container');
+        if (!container) return;
         container.innerHTML = "";
 
         if (litigationQuestions[selectedType]) {
@@ -237,7 +248,7 @@
                 container.appendChild(wrapper);
             });
         } else {
-            container.innerHTML = "<p style='color:red; font-size:12px;'>Error: No questions found. Please go back.</p>";
+            container.innerHTML = "<p style='color:red; font-size:12px;'>Error: No questions found. Please select a category.</p>";
         }
     }
 
@@ -257,14 +268,20 @@
     }
 
     function next(s) {
-        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-        document.getElementById('step'+s).classList.add('active');
-        document.getElementById('fill').style.width = (s * 25) + '%';
+        const steps = document.querySelectorAll('.step');
+        steps.forEach(el => el.classList.remove('active'));
+        const targetStep = document.getElementById('step' + s);
+        if (targetStep) targetStep.classList.add('active');
+        
+        const fill = document.getElementById('fill');
+        if (fill) fill.style.width = (s * 25) + '%';
+        
         window.scrollTo(0,0);
+        if (s === 4) setTimeout(resizeCanvas, 50); // Ensure canvas is ready when step 4 shows
     }
 
     async function submit() {
-        if (signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
+        if (!signaturePad || signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
         const btn = document.getElementById('submit-btn');
         btn.innerText = "Processing Audit..."; btn.disabled = true;
 
