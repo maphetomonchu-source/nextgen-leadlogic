@@ -271,7 +271,10 @@
         document.getElementById('step' + s).classList.add('active');
         document.getElementById('fill').style.width = (s * 25) + '%';
         window.scrollTo(0,0);
-        if (s === 4) setTimeout(resizeCanvas, 200);
+        // FIX: Re-initialize canvas size when step 4 is displayed
+        if (s === 4) {
+            setTimeout(resizeCanvas, 200);
+        }
     }
 
     async function submit() {
