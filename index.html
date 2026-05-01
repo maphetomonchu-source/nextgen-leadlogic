@@ -243,6 +243,7 @@
                 qLabel.innerText = q;
                 const qInput = document.createElement('select');
                 qInput.id = `dynamic_q_${index}`;
+                qInput.required = true;
                 qInput.innerHTML = `<option value="">-- Choose One --</option><option value="Yes">Yes</option><option value="No">No</option><option value="Unsure">Unsure</option>`;
                 dynamicContainer.appendChild(qLabel);
                 dynamicContainer.appendChild(qInput);
@@ -268,6 +269,9 @@
     }
 
     function next(s) {
+        // FIX: If going to step 3, trigger the question generation automatically
+        if(s === 3) { updateEvidenceLabels(); }
+        
         document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
         document.getElementById('step'+s).classList.add('active');
         document.getElementById('fill').style.width = (s * 25) + '%';
