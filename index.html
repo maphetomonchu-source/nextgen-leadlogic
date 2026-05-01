@@ -107,9 +107,12 @@
     <div class="step" id="step3">
         <h2>Clinical Audit</h2>
         <p>Step 3: Verbatim Evidence Capture</p>
+        
         <div id="dynamic-questions-container"></div>
+
         <label>Medical Evidence / Pathology Impression</label>
         <textarea id="pathology" rows="4" placeholder="Copy the 'Impression' or 'Diagnosis' section exactly..."></textarea>
+        
         <div class="btn-row">
             <button class="btn-back" onclick="next(2)">Back</button>
             <button class="btn-next" style="width:70%" onclick="next(4)">Final Certification</button>
@@ -133,24 +136,18 @@
 </div>
 
 <script>
-    // Configuration
     const SUPABASE_URL = 'YOUR_SUPABASE_URL';
     const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
-    // Signature Pad Initialization
     const canvas = document.getElementById('signature-pad');
     const signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)', penColor: 'rgb(10, 37, 64)' });
 
     function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
-        canvas.getContext("2d").scale(ratio, ratio);
-        signaturePad.clear(); 
+        canvas.width = canvas.offsetWidth * ratio; canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio); signaturePad.clear(); 
     }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas); resizeCanvas();
 
     const litigationQuestions = {
         'DJI': [
@@ -224,6 +221,7 @@
         const selectedType = document.getElementById('case_type').value;
         const container = document.getElementById('dynamic-questions-container');
         container.innerHTML = "";
+
         if (litigationQuestions[selectedType]) {
             litigationQuestions[selectedType].forEach(item => {
                 const wrapper = document.createElement('div');
@@ -238,6 +236,8 @@
                 `;
                 container.appendChild(wrapper);
             });
+        } else {
+            container.innerHTML = "<p style='color:red; font-size:12px;'>Error: No questions found. Please go back.</p>";
         }
     }
 
@@ -246,43 +246,31 @@
             const fName = document.getElementById('first_name').value;
             const email = document.getElementById('email').value;
             const consent = document.getElementById('consent_checkbox').checked;
-            if (!fName || !email || !consent) { 
-                alert("Please complete name, email, and consent."); 
-                return; 
-            }
+            if (!fName || !email || !consent) { alert("Please complete name, email, and consent."); return; }
         }
         if (current === 2) {
             const caseVal = document.getElementById('case_type').value;
-            if (!caseVal) { 
-                alert("Please select a Case Category."); 
-                return; 
-            }
+            if (!caseVal) { alert("Please select a Case Category."); return; }
             generateDynamicQuestions();
         }
         next(target);
     }
 
     function next(s) {
-        const steps = document.querySelectorAll('.step');
-        steps.forEach(el => el.classList.remove('active'));
-        const nextStep = document.getElementById('step' + s);
-        if (nextStep) {
-            nextStep.classList.add('active');
-            document.getElementById('fill').style.width = (s * 25) + '%';
-            window.scrollTo(0, 0);
-        }
+        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+        document.getElementById('step'+s).classList.add('active');
+        document.getElementById('fill').style.width = (s * 25) + '%';
+        window.scrollTo(0,0);
     }
 
     async function submit() {
         if (signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
         const btn = document.getElementById('submit-btn');
-        btn.innerText = "Processing Audit..."; 
-        btn.disabled = true;
-        
+        btn.innerText = "Processing Audit..."; btn.disabled = true;
+
         const dynamicData = {};
         document.querySelectorAll('.dynamic-answer').forEach(el => {
-            const questionText = el.getAttribute('data-qtext');
-            dynamicData[questionText] = el.value;
+            dynamicData[el.getAttribute('data-qtext')] = el.value;
         });
 
         const payload = {
