@@ -24,7 +24,27 @@
         .btn-next { background: var(--primary); color: white; width: 100%; }
         .btn-next:hover { background: #153e63; }
         .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
-        #signature-pad { border: 2px solid #0a2540; width: 100%; height: 200px; border-radius: 8px; background: #ffffff; cursor: crosshair; touch-action: none; }
+
+        /* REPAIRED SIGNATURE LOGIC CSS */
+        .signature-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border: 2px solid #0a2540;
+            border-radius: 8px;
+            background: #ffffff;
+            touch-action: none; /* Critical for mobile signing[cite: 2] */
+            margin-bottom: 10px;
+        }
+        #signature-pad {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
         .compliance-text { font-size: 11px; color: #6b7c93; line-height: 1.6; margin-top: 15px; text-align: justify; }
         .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
         .checkbox-row input { width: auto; margin: 0; margin-top: 3px; }
@@ -121,10 +141,12 @@
     <div class="step" id="step4">
         <h2>Legal Execution</h2>
         <p>Step 4: Digital Signature for Settlement Tiering</p>
-        <div style="position: relative; margin-bottom: 10px;">
+        
+        <div class="signature-wrapper">
             <canvas id="signature-pad"></canvas>
-            <button type="button" onclick="signaturePad.clear()" style="position: absolute; right: 10px; bottom: 10px; padding: 8px 15px; font-size: 12px; background: #f1f1f1; color: #333; border-radius: 4px; border: 1px solid #ccc;">Clear Signature</button>
+            <button type="button" onclick="signaturePad.clear()" style="position: absolute; right: 10px; bottom: 10px; padding: 8px 15px; font-size: 12px; background: #f1f1f1; color: #333; border-radius: 4px; border: 1px solid #ccc; z-index: 10;">Clear Signature</button>
         </div>
+
         <div class="compliance-text">
             <strong>Legal Certification & Authorization:</strong> By signing and submitting this audit, I electronically certify that the information provided is true and accurate to the best of my knowledge. I authorize NextGen Leadlogic to perform a preliminary settlement audit and share my data with Morgan & Morgan for the purpose of evaluating my potential claim. I understand that this submission does not constitute an attorney-client relationship until a formal retainer is signed, and that results of this audit are preliminary and subject to full medical record verification. ©2026.
         </div>
@@ -139,45 +161,41 @@
     let _supabase, signaturePad;
     const canvas = document.getElementById('signature-pad');
 
-    // CONFIG: Replace with your actual project values from Supabase Dashboard
-    const SUPABASE_URL = 'https://your-project-id.supabase.co'; // MUST be a valid HTTPS URL
+    // SUPABASE CONFIG[cite: 1]
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
     const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
 
     window.onload = function() {
-        // Initialize Signature Pad FIRST so it works independently
         try {
+            _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            // Initialize but don't size yet (hidden)
             signaturePad = new SignaturePad(canvas, { 
                 backgroundColor: 'rgb(255, 255, 255)', 
                 penColor: 'rgb(10, 37, 64)',
                 minWidth: 1.5,
                 maxWidth: 4.5
             });
-            console.log("Signature Pad Ready.");
-        } catch (e) { 
-            console.error("Signature Init Error:", e); 
-        }
-
-        // Initialize Supabase SECOND
-        try {
-            if (SUPABASE_URL.startsWith('https')) {
-                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                console.log("Supabase Client Ready.");
-            } else {
-                console.warn("Supabase URL is invalid. Database submissions will fail, but form logic will work.");
-            }
-        } catch (e) { 
-            console.error("Supabase Connection Error:", e); 
-        }
+        } catch (e) { console.error("Init Error:", e); }
     };
 
+    /**
+     * REPAIRED SIGNATURE CALIBRATION[cite: 2]
+     */
     function resizeCanvas() {
         if (!canvas || !signaturePad) return;
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio; 
-        canvas.height = canvas.offsetHeight * ratio;
-        canvas.getContext("2d").scale(ratio, ratio); 
-        signaturePad.clear(); 
+        
+        // Use the wrapper's dimensions because canvas might not have them yet
+        const wrapper = canvas.parentElement;
+        canvas.width = wrapper.offsetWidth * ratio; 
+        canvas.height = wrapper.offsetHeight * ratio;
+        
+        const context = canvas.getContext("2d");
+        context.scale(ratio, ratio);
+        
+        signaturePad.clear(); // Reset to clear any artifacts from resize
     }
+
     window.addEventListener("resize", resizeCanvas); 
 
     const litigationQuestions = {
@@ -287,26 +305,20 @@
         document.getElementById('fill').style.width = (s * 25) + '%';
         window.scrollTo(0,0);
         
-        // Ensure canvas initializes when Step 4 is revealed
+        // REPAIRED NAVIGATION LOGIC: Trigger resize only when visible[cite: 2]
         if (s === 4) {
-            setTimeout(() => {
-                resizeCanvas();
-                console.log("Canvas ready for signing.");
-            }, 150);
+            setTimeout(resizeCanvas, 150);
         }
     }
 
     async function submit() {
-        if (!signaturePad || signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
-        
+        if (signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
         const btn = document.getElementById('submit-btn');
         btn.innerText = "Securing Audit Data..."; btn.disabled = true;
-        
         const dynamicData = {};
         document.querySelectorAll('.dynamic-answer').forEach(el => {
             dynamicData[el.getAttribute('data-qtext')] = el.value;
         });
-
         const payload = {
             first_name: document.getElementById('first_name').value,
             last_name: document.getElementById('last_name').value,
@@ -320,13 +332,9 @@
             apollo_form_id: document.getElementById('apollo_form_id').value,
             submitted_at: new Date().toISOString()
         };
-
         try {
-            if (!_supabase) throw new Error("Supabase is not configured correctly.");
-            
             const { error } = await _supabase.from('settlement_assets').insert([payload]);
             if (error) throw error;
-            
             alert("AUDIT SECURED AND TRANSMITTED."); 
             location.reload();
         } catch (err) {
