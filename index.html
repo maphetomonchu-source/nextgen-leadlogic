@@ -139,31 +139,21 @@
     let _supabase, signaturePad;
     const canvas = document.getElementById('signature-pad');
 
-    // CONFIGURATION - UPDATE THE URL BELOW
-    const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co'; 
+    // SUPABASE CONFIG
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
     const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
 
-    function initSupabase() {
+    window.onload = function() {
         try {
-            if (SUPABASE_URL.includes('YOUR_SUPABASE_URL')) {
-                console.warn("Supabase URL not set. Data will not save.");
-                return;
-            }
             _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        } catch (e) { console.error("Supabase init error:", e); }
-    }
-
-    function initSignature() {
-        if (canvas) {
             signaturePad = new SignaturePad(canvas, { 
                 backgroundColor: 'rgb(255, 255, 255)', 
                 penColor: 'rgb(10, 37, 64)',
                 minWidth: 1.5,
                 maxWidth: 4.5
             });
-            resizeCanvas();
-        }
-    }
+        } catch (e) { console.error("Init Error:", e); }
+    };
 
     function resizeCanvas() {
         if (!canvas || !signaturePad) return;
@@ -173,10 +163,8 @@
         canvas.getContext("2d").scale(ratio, ratio); 
         signaturePad.clear(); 
     }
-
     window.addEventListener("resize", resizeCanvas); 
-    
-    // Question Bank (Remains unchanged)
+
     const litigationQuestions = {
         'DJI': [
             { id: 'dji_p1', q: 'Primary Surgery: Did you undergo a hip or knee replacement using a DJI implant?' },
@@ -248,75 +236,52 @@
     function generateDynamicQuestions() {
         const selectedType = document.getElementById('case_type').value;
         const container = document.getElementById('dynamic-questions-container');
-        if (!container) return false;
+        if (!container) return;
         container.innerHTML = "";
-
         if (litigationQuestions[selectedType]) {
             litigationQuestions[selectedType].forEach(item => {
                 const wrapper = document.createElement('div');
                 wrapper.className = "niche-question-block";
-                wrapper.innerHTML = `
-                    <label class="niche-label">${item.q}</label>
+                wrapper.innerHTML = `<label class="niche-label">${item.q}</label>
                     <select class="dynamic-answer" data-qid="${item.id}" data-qtext="${item.q}">
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="Unsure">Unsure</option>
-                    </select>
-                `;
+                        <option value="Yes">Yes</option><option value="No">No</option><option value="Unsure">Unsure</option>
+                    </select>`;
                 container.appendChild(wrapper);
             });
             return true;
-        } else {
-            container.innerHTML = "<p style='color:red; font-size:12px;'>Error: No questions found. Please select a category.</p>";
-            return false;
         }
+        return false;
     }
 
     function validateAndNext(current, target) {
         if (current === 1) {
-            const fName = document.getElementById('first_name').value;
-            const email = document.getElementById('email').value;
-            const consent = document.getElementById('consent_checkbox').checked;
-            if (!fName || !email || !consent) { alert("Please complete name, email, and provide your express consent."); return; }
+            if (!document.getElementById('first_name').value || !document.getElementById('consent_checkbox').checked) {
+                alert("Please complete name, email, and provide your express consent."); return;
+            }
         }
         if (current === 2) {
-            const caseVal = document.getElementById('case_type').value;
-            if (!caseVal) { alert("Please select a Case Category."); return; }
-            const success = generateDynamicQuestions();
-            if (!success) return; 
+            if (!document.getElementById('case_type').value) { alert("Please select a Case Category."); return; }
+            generateDynamicQuestions();
         }
         next(target);
     }
 
     function next(s) {
-        const steps = document.querySelectorAll('.step');
-        steps.forEach(el => el.classList.remove('active'));
-        const targetStep = document.getElementById('step' + s);
-        if (targetStep) {
-            targetStep.classList.add('active');
-        }
-        
-        const fill = document.getElementById('fill');
-        if (fill) fill.style.width = (s * 25) + '%';
-        
+        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+        document.getElementById('step' + s).classList.add('active');
+        document.getElementById('fill').style.width = (s * 25) + '%';
         window.scrollTo(0,0);
-        if (s === 4) {
-            setTimeout(resizeCanvas, 200); // Small delay to allow element visibility
-        }
+        if (s === 4) setTimeout(resizeCanvas, 200);
     }
 
     async function submit() {
-        if (!signaturePad || signaturePad.isEmpty()) { alert("Digital Signature Required to verify audit."); return; }
-        if (!_supabase) { alert("Supabase Connection Error. Check your configuration."); return; }
-        
+        if (signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
         const btn = document.getElementById('submit-btn');
         btn.innerText = "Securing Audit Data..."; btn.disabled = true;
-
         const dynamicData = {};
         document.querySelectorAll('.dynamic-answer').forEach(el => {
             dynamicData[el.getAttribute('data-qtext')] = el.value;
         });
-
         const payload = {
             first_name: document.getElementById('first_name').value,
             last_name: document.getElementById('last_name').value,
@@ -330,7 +295,6 @@
             apollo_form_id: document.getElementById('apollo_form_id').value,
             submitted_at: new Date().toISOString()
         };
-
         try {
             const { error } = await _supabase.from('settlement_assets').insert([payload]);
             if (error) throw error;
@@ -338,16 +302,9 @@
             location.reload();
         } catch (err) {
             alert("Submission Error: " + err.message); 
-            btn.disabled = false; 
-            btn.innerText = "Submit Final Audit";
+            btn.disabled = false; btn.innerText = "Submit Final Audit";
         }
     }
-
-    // Initialize scripts on load
-    window.onload = function() {
-        initSupabase();
-        initSignature();
-    };
 </script>
 </body>
 </html>
