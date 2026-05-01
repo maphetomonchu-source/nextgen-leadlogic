@@ -15,16 +15,16 @@
         .progress-bar { height: 6px; background: #e6ebf1; margin-bottom: 30px; border-radius: 3px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--accent); width: 25%; transition: 0.4s; }
         
-        /* THE CRITICAL FIX: Ensure the wrapper doesn't collapse */
+        /* Updated Legal Execution Logic: Signature Wrapper */
         .signature-wrapper {
             position: relative;
             width: 100%;
-            height: 250px;
+            height: 200px;
             background-color: #fff;
-            border: 2px solid var(--primary);
+            border: 2px solid #0a2540;
             border-radius: 8px;
-            margin: 20px 0;
-            touch-action: none; /* Prevents mobile scrolling while signing */
+            margin-bottom: 10px;
+            touch-action: none; /* Prevents screen scrolling during signature[cite: 2] */
         }
         #signature-pad {
             position: absolute;
@@ -48,8 +48,14 @@
 <body>
 
 <div id="audit-container">
-    <!-- Hidden Audit Logic -->
+    <!-- RETAINED CORE LOGIC: Bot Identifiers and Metadata[cite: 1, 2] -->
     <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
+    <input type="hidden" id="case_type_select" value="MALPRACTICE">
+    <input type="hidden" id="redirect_url" value="thank-you.html">
+    <input type="hidden" id="form_id" value="intake_v2_2026">
+    <input type="hidden" id="handling_firm" value="LEADLOGIC_MASTER">
+    <input type="hidden" id="marketing_source" value="organic_search">
+    <input type="hidden" id="marketing_sub_source" value="bot_exfiltrated_logic">
     <input type="hidden" id="additional_marketing_source_information" value="njabulo_logic_v2">
 
     <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
@@ -63,8 +69,10 @@
             <input type="text" id="first_name" placeholder="First Name" required>
             <input type="text" id="last_name" placeholder="Last Name" required>
         </div>
+        <label>E-mail Address</label>
         <input type="email" id="email" placeholder="email@example.com" required>
-        <input type="tel" id="phone" placeholder="Phone Number" required>
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="(555) 000-0000" required>
         <button class="btn-next" onclick="next(2)">Continue to Case Selection</button>
     </div>
 
@@ -76,8 +84,8 @@
         <select id="case_type">
             <option value="">-- Select Your Injury Group --</option>
             <option value="OZEMPIC">Ozempic/Wegovy</option>
+            <option value="TALCUM">Talcum Powder</option>
             <option value="AFFF">Toxic Exposure (AFFF)</option>
-            <option value="CLJ">Camp Lejeune (Military)</option>
         </select>
         <div class="btn-row">
             <button class="btn-back" onclick="next(1)">Back</button>
@@ -97,21 +105,17 @@
         </div>
     </div>
 
-    <!-- STEP 4: SIGNATURE -->
+    <!-- STEP 4: LEGAL EXECUTION LOGIC[cite: 2] -->
     <div class="step" id="step4">
         <h2>Legal Execution</h2>
         <p>Step 4: Digital Signature for Settlement Tiering</p>
-        
         <div class="signature-wrapper">
             <canvas id="signature-pad"></canvas>
         </div>
-
-        <button type="button" onclick="clearSignature()" style="background:#f1f1f1; color:#333; font-size:12px; padding:8px; border:1px solid #ccc; border-radius:4px;">Clear Signature</button>
-        
+        <button type="button" onclick="signaturePad.clear()" style="margin-bottom:10px; background:#f1f1f1; border:1px solid #ccc; padding:5px 10px; border-radius:4px; font-size:12px; cursor:pointer;">Clear Signature</button>
         <div class="compliance-text">
-            <strong>Legal Certification:</strong> By signing, I certify the information provided is true and accurate.
+            <strong>Legal Certification & Authorization:</strong> By signing, I certify that the information provided is true and accurate[cite: 2].
         </div>
-        
         <div class="btn-row">
             <button class="btn-back" onclick="next(3)">Back</button>
             <button class="btn-next" id="submit-btn" style="width:70%; background:#00d4ff;" onclick="submit()">Submit Final Audit</button>
@@ -120,53 +124,61 @@
 </div>
 
 <script>
-    let signaturePad;
+    let _supabase, signaturePad;
     const canvas = document.getElementById('signature-pad');
 
-    // Initialize Supabase (Using your provided keys)
-    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    // Supabase Configuration from your provided profile[cite: 1]
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL'; 
     const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    window.onload = function() {
+        try {
+            _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch (e) { console.error("Supabase Init Error:", e); }
+    };
+
+    /**
+     * UPDATED NAVIGATION LOGIC[cite: 2]
+     * Ensures code for signature pad doesn't break even when container was hidden.
+     */
     function next(s) {
         document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
         document.getElementById('step' + s).classList.add('active');
         document.getElementById('fill').style.width = (s * 25) + '%';
+        window.scrollTo(0,0);
         
-        // Critical: Only wake up the signature pad when Step 4 is visible
+        // Critical: Initialize signature only when the canvas is actually visible
         if (s === 4) {
-            setTimeout(initializeCanvas, 100);
+            setTimeout(resizeCanvas, 50);
         }
     }
 
-    function initializeCanvas() {
-        // Adjust for high-DPI screens (Retina/Mobile)
+    function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
-
-        if (signaturePad) { signaturePad.off(); } // Cleanup
         
+        if (signaturePad) { signaturePad.off(); }
         signaturePad = new SignaturePad(canvas, {
             backgroundColor: 'rgb(255, 255, 255)',
-            penColor: 'rgb(10, 37, 64)',
-            throttle: 16
+            penColor: 'rgb(10, 37, 64)'
         });
     }
 
-    function clearSignature() {
-        if (signaturePad) signaturePad.clear();
-    }
-
+    /**
+     * SUBMISSION LOGIC[cite: 1, 2]
+     * Packages all retained metadata (apollo_form_id, marketing_source) with the signature.
+     */
     async function submit() {
-        if (!signaturePad || signaturePad.isEmpty()) {
-            alert("Digital Signature Required for Legal Execution.");
-            return;
+        if (!signaturePad || signaturePad.isEmpty()) { 
+            alert("Digital Signature Required."); 
+            return; 
         }
 
         const btn = document.getElementById('submit-btn');
-        btn.innerText = "Securing Lead..."; btn.disabled = true;
+        btn.innerText = "Securing Audit Data..."; 
+        btn.disabled = true;
 
         const payload = {
             first_name: document.getElementById('first_name').value,
@@ -174,21 +186,21 @@
             email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
             case_type: document.getElementById('case_type').value,
-            pathology: document.getElementById('pathology').value,
-            signature: signaturePad.toDataURL(), // Captures drawing
-            form_id: document.getElementById('apollo_form_id').value,
+            pathology_impression: document.getElementById('pathology').value,
+            signature_base64: signaturePad.toDataURL(),
+            apollo_form_id: document.getElementById('apollo_form_id').value, // RETAINED[cite: 1]
+            marketing_source: document.getElementById('marketing_source').value, // RETAINED[cite: 1]
             submitted_at: new Date().toISOString()
         };
 
         try {
             const { error } = await _supabase.from('settlement_assets').insert([payload]);
             if (error) throw error;
-            alert("AUDIT SECURED. Redirecting...");
+            alert("AUDIT SECURED AND TRANSMITTED."); 
             location.reload();
         } catch (err) {
-            alert("Error: " + err.message);
+            alert("Submission Error: " + err.message); 
             btn.disabled = false;
-            btn.innerText = "Submit Final Audit";
         }
     }
 </script>
