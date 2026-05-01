@@ -139,12 +139,12 @@
     let _supabase, signaturePad;
     const canvas = document.getElementById('signature-pad');
 
-    // CONFIG: Replace with your actual project values from Supabase Dashboard
-    const SUPABASE_URL = 'https://your-project-id.supabase.co'; // MUST be a valid HTTPS URL
+    // CONFIG: Ensure these are set with actual values from your dashboard
+    const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co'; 
     const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
 
     window.onload = function() {
-        // Initialize Signature Pad FIRST so it works independently
+        // Init Signature Pad First (Separated to ensure it works even if DB fails)
         try {
             signaturePad = new SignaturePad(canvas, { 
                 backgroundColor: 'rgb(255, 255, 255)', 
@@ -152,21 +152,21 @@
                 minWidth: 1.5,
                 maxWidth: 4.5
             });
-            console.log("Signature Pad Ready.");
+            console.log("Signature Pad Ready.");[cite: 1]
         } catch (e) { 
             console.error("Signature Init Error:", e); 
         }
 
-        // Initialize Supabase SECOND
+        // Init Supabase with a valid URL check
         try {
-            if (SUPABASE_URL.startsWith('https')) {
+            if (SUPABASE_URL.startsWith('https://')) {
                 _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                console.log("Supabase Client Ready.");
+                console.log("Supabase Client Ready.");[cite: 1]
             } else {
-                console.warn("Supabase URL is invalid. Database submissions will fail, but form logic will work.");
+                console.warn("Supabase URL is not yet configured with a valid HTTPS address.");
             }
         } catch (e) { 
-            console.error("Supabase Connection Error:", e); 
+            console.error("Supabase Init Error:", e); 
         }
     };
 
@@ -287,12 +287,9 @@
         document.getElementById('fill').style.width = (s * 25) + '%';
         window.scrollTo(0,0);
         
-        // Ensure canvas initializes when Step 4 is revealed
+        // Critical Fix: Recalculate canvas size when the step becomes visible
         if (s === 4) {
-            setTimeout(() => {
-                resizeCanvas();
-                console.log("Canvas ready for signing.");
-            }, 150);
+            setTimeout(resizeCanvas, 150);
         }
     }
 
@@ -322,7 +319,7 @@
         };
 
         try {
-            if (!_supabase) throw new Error("Supabase is not configured correctly.");
+            if (!_supabase) throw new Error("Database client is not initialized. Please verify your Supabase URL.");[cite: 1]
             
             const { error } = await _supabase.from('settlement_assets').insert([payload]);
             if (error) throw error;
