@@ -132,7 +132,6 @@
 </div>
 
 <script>
-    // Global initializations with safety checks
     let _supabase, signaturePad;
     const canvas = document.getElementById('signature-pad');
 
@@ -144,9 +143,7 @@
         if (canvas) {
             signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)', penColor: 'rgb(10, 37, 64)' });
         }
-    } catch (e) {
-        console.error("Initialization error:", e);
-    }
+    } catch (e) { console.error("Initialization error:", e); }
 
     function resizeCanvas() {
         if (!canvas || !signaturePad) return;
@@ -247,8 +244,10 @@
                 `;
                 container.appendChild(wrapper);
             });
+            return true; // Return true if successful
         } else {
             container.innerHTML = "<p style='color:red; font-size:12px;'>Error: No questions found. Please select a category.</p>";
+            return false;
         }
     }
 
@@ -262,7 +261,9 @@
         if (current === 2) {
             const caseVal = document.getElementById('case_type').value;
             if (!caseVal) { alert("Please select a Case Category."); return; }
-            generateDynamicQuestions();
+            // Force generate questions immediately
+            const success = generateDynamicQuestions();
+            if (!success) return; 
         }
         next(target);
     }
@@ -271,13 +272,18 @@
         const steps = document.querySelectorAll('.step');
         steps.forEach(el => el.classList.remove('active'));
         const targetStep = document.getElementById('step' + s);
-        if (targetStep) targetStep.classList.add('active');
+        if (targetStep) {
+            targetStep.classList.add('active');
+        } else {
+            console.error("Step " + s + " not found!");
+            return;
+        }
         
         const fill = document.getElementById('fill');
         if (fill) fill.style.width = (s * 25) + '%';
         
         window.scrollTo(0,0);
-        if (s === 4) setTimeout(resizeCanvas, 50); // Ensure canvas is ready when step 4 shows
+        if (s === 4) setTimeout(resizeCanvas, 50);
     }
 
     async function submit() {
