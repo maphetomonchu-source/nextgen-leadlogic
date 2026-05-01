@@ -9,7 +9,7 @@
     <style>
         :root { --primary: #0a2540; --accent: #00d4ff; --text: #424770; }
         body { font-family: 'Inter', sans-serif; background: #f6f9fc; display: flex; justify-content: center; padding: 40px 20px; color: var(--text); }
-        #audit-container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 50px 100px -20px rgba(50,50,93,0.25); max-width: 650px; width: 100%; border-top: 10px solid var(--primary); }
+        #audit-container { background: white; padding: 40px; border-radius: 16_px; box-shadow: 0 50px 100px -20px rgba(50,50,93,0.25); max-width: 650px; width: 100%; border-top: 10px solid var(--primary); }
         .step { display: none; }
         .step.active { display: block; }
         .progress-bar { height: 6px; background: #e6ebf1; margin-bottom: 30px; border-radius: 3px; overflow: hidden; }
@@ -24,7 +24,7 @@
         .btn-next { background: var(--primary); color: white; width: 100%; }
         .btn-next:hover { background: #153e63; }
         .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
-        #signature-pad { border: 2px solid #0a2540; width: 100%; height: 200px; border-radius: 8px; background: #ffffff; cursor: crosshair; touch-action: none; }
+        #signature-pad { border: 2px solid #0a2540; width: 100%; height: 200px; border-radius: 8px; background: #ffffff; cursor: crosshair; touch-action: none; display: block; }
         .compliance-text { font-size: 11px; color: #6b7c93; line-height: 1.6; margin-top: 15px; text-align: justify; }
         .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
         .checkbox-row input { width: auto; margin: 0; margin-top: 3px; }
@@ -114,6 +114,7 @@
         <h2>Legal Execution</h2>
         <p>Step 4: Digital Signature</p>
         <div style="position: relative; margin-bottom: 10px;">
+            <!-- Canvas dimensions set explicitly via JS in resizeCanvas() -->
             <canvas id="signature-pad"></canvas>
             <button type="button" onclick="signaturePad.clear()" style="position: absolute; right: 10px; bottom: 10px; padding: 8px 15px; font-size: 12px; background: #f1f1f1; border-radius: 4px; border: 1px solid #ccc;">Clear</button>
         </div>
@@ -132,22 +133,31 @@
     window.onload = function() {
         try {
             _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            // Initialize Pad
             signaturePad = new SignaturePad(canvas, { 
                 backgroundColor: 'rgb(255, 255, 255)', 
                 penColor: 'rgb(10, 37, 64)' 
             });
+            // Initial resize attempt
             resizeCanvas();
         } catch (e) { console.error("Init Error:", e); }
     };
 
     function resizeCanvas() {
-        if (!canvas || !signaturePad) return;
+        // Essential: If the canvas is hidden (display: none), offsetWidth will be 0.
+        // We only resize when the element is actually visible.
+        if (!canvas || !signaturePad || canvas.offsetWidth === 0) return;
+        
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
-        signaturePad.clear();
+        
+        // This clears the canvas; needed because changing width/height resets the canvas content
+        signaturePad.clear(); 
     }
+
+    // Listen for window resize to keep the canvas responsive
     window.addEventListener("resize", resizeCanvas);
 
     const litigationQuestions = {
@@ -184,11 +194,18 @@
         document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
         document.getElementById('step' + s).classList.add('active');
         document.getElementById('fill').style.width = (s * 25) + '%';
-        if (s === 4) setTimeout(resizeCanvas, 200);
+        
+        // CRITICAL: Signature Pad must be resized AFTER the step becomes "active" (visible)
+        if (s === 4) {
+            setTimeout(resizeCanvas, 50); // Small delay to ensure CSS display: block is processed
+        }
     }
 
     async function submit() {
-        if (signaturePad.isEmpty()) { alert("Signature Required."); return; }
+        if (signaturePad.isEmpty()) { 
+            alert("Signature Required."); 
+            return; 
+        }
         const btn = document.getElementById('submit-btn');
         btn.disabled = true;
         
