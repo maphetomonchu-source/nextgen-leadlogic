@@ -28,7 +28,6 @@
         .compliance-text { font-size: 10px; color: #6b7c93; line-height: 1.5; margin-top: 15px; }
         .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
         .checkbox-row input { width: auto; margin: 0; margin-top: 3px; }
-        /* STYLING FOR DYNAMIC QUESTIONS */
         .niche-question-block { background: #f8fafd; border: 1px solid #e6ebf1; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
         .niche-label { text-transform: none; color: var(--primary); font-size: 14px; margin-bottom: 8px; font-weight: 600; }
         .dynamic-answer { margin-bottom: 0; }
@@ -108,13 +107,9 @@
     <div class="step" id="step3">
         <h2>Clinical Audit</h2>
         <p>Step 3: Verbatim Evidence Capture</p>
-        
-        <!-- ALL QUESTIONS WILL INJECT HERE -->
         <div id="dynamic-questions-container"></div>
-
         <label>Medical Evidence / Pathology Impression</label>
         <textarea id="pathology" rows="4" placeholder="Copy the 'Impression' or 'Diagnosis' section exactly..."></textarea>
-        
         <div class="btn-row">
             <button class="btn-back" onclick="next(2)">Back</button>
             <button class="btn-next" style="width:70%" onclick="next(4)">Final Certification</button>
@@ -138,7 +133,6 @@
 </div>
 
 <script>
-    // INITIALIZATION
     const SUPABASE_URL = 'YOUR_SUPABASE_URL';
     const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -152,7 +146,6 @@
     }
     window.addEventListener("resize", resizeCanvas); resizeCanvas();
 
-    // FULL QUESTION DATABASE
     const litigationQuestions = {
         'DJI': [
             { id: 'dji_p1', q: 'Primary Surgery: Did you undergo a hip or knee replacement using a DJI implant?' },
@@ -221,14 +214,10 @@
         ]
     };
 
-    // CORE INJECTION FUNCTION
     function generateDynamicQuestions() {
         const selectedType = document.getElementById('case_type').value;
         const container = document.getElementById('dynamic-questions-container');
-        
-        // Clear previous entries
         container.innerHTML = "";
-
         if (litigationQuestions[selectedType]) {
             litigationQuestions[selectedType].forEach(item => {
                 const wrapper = document.createElement('div');
@@ -244,11 +233,10 @@
                 container.appendChild(wrapper);
             });
         } else {
-            container.innerHTML = "<p style='color:red; font-size:12px;'>Error: No questions found for this category. Please go back and select a category.</p>";
+            container.innerHTML = "<p style='color:red; font-size:12px;'>Error: No questions found for this category.</p>";
         }
     }
 
-    // NAVIGATION AND VALIDATION
     function validateAndNext(current, target) {
         if (current === 1) {
             const fName = document.getElementById('first_name').value;
@@ -259,32 +247,33 @@
         if (current === 2) {
             const caseVal = document.getElementById('case_type').value;
             if (!caseVal) { alert("Please select a Case Category."); return; }
-            // FORCE GENERATION RIGHT BEFORE SHOWING STEP 3
             generateDynamicQuestions();
         }
         next(target);
     }
 
     function next(s) {
-        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-        document.getElementById('step'+s).classList.add('active');
-        document.getElementById('fill').style.width = (s * 25) + '%';
-        window.scrollTo(0,0);
+        const steps = document.querySelectorAll('.step');
+        steps.forEach(el => el.classList.remove('active'));
+        const nextStep = document.getElementById('step' + s);
+        if (nextStep) {
+            nextStep.classList.add('active');
+            document.getElementById('fill').style.width = (s * 25) + '%';
+            window.scrollTo(0, 0);
+        } else {
+            console.error("Step not found: step" + s);
+        }
     }
 
-    // SUBMISSION
     async function submit() {
         if (signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
         const btn = document.getElementById('submit-btn');
         btn.innerText = "Processing Audit..."; btn.disabled = true;
-
-        // Capture all dynamic answers
         const dynamicData = {};
         document.querySelectorAll('.dynamic-answer').forEach(el => {
             const questionText = el.getAttribute('data-qtext');
             dynamicData[questionText] = el.value;
         });
-
         const payload = {
             first_name: document.getElementById('first_name').value,
             last_name: document.getElementById('last_name').value,
@@ -292,13 +281,12 @@
             phone: document.getElementById('phone').value,
             zip_code: document.getElementById('zip_code').value,
             case_type: document.getElementById('case_type').value,
-            audit_metadata: dynamicData, // This stores all dynamic questions
+            audit_metadata: dynamicData,
             pathology_impression: document.getElementById('pathology').value,
             signature_base64: signaturePad.toDataURL(),
             apollo_form_id: document.getElementById('apollo_form_id').value,
             submitted_at: new Date().toISOString()
         };
-
         try {
             const { error } = await _supabase.from('settlement_assets').insert([payload]);
             if (error) throw error;
