@@ -155,15 +155,18 @@
         } catch (e) { console.error("Init Error:", e); }
     };
 
+    // This function handles the scaling issue
     function resizeCanvas() {
         if (!canvas || !signaturePad) return;
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio; 
-        canvas.height = canvas.offsetHeight * ratio;
-        canvas.getContext("2d").scale(ratio, ratio); 
-        signaturePad.clear(); 
+        
+        // Use clientWidth/Height to get the CSS-defined size
+        canvas.width = canvas.clientWidth * ratio;
+        canvas.height = canvas.clientHeight * ratio;
+        
+        canvas.getContext("2d").scale(ratio, ratio);
+        signaturePad.clear(); // Clear to reset internal state
     }
-    window.addEventListener("resize", resizeCanvas); 
 
     const litigationQuestions = {
         'DJI': [
@@ -271,9 +274,10 @@
         document.getElementById('step' + s).classList.add('active');
         document.getElementById('fill').style.width = (s * 25) + '%';
         window.scrollTo(0,0);
-        // FIX: Re-initialize canvas size when step 4 is displayed
+        
+        // CRITICAL FIX: Initialize canvas once it is actually visible
         if (s === 4) {
-            setTimeout(resizeCanvas, 200);
+            setTimeout(resizeCanvas, 100);
         }
     }
 
