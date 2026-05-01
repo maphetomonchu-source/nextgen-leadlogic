@@ -31,6 +31,9 @@
         .niche-question-block { background: #f8fafd; border: 1px solid #e6ebf1; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
         .niche-label { text-transform: none; color: var(--primary); font-size: 14px; margin-bottom: 8px; font-weight: 600; }
         .dynamic-answer { margin-bottom: 0; }
+        
+        /* NEW STYLES FOR RETAINER HEADING */
+        .retainer-header { text-align: center; margin-bottom: 20px; padding: 15px; background: #eefbff; border: 1px dashed var(--accent); border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -110,8 +113,7 @@
         <p>Step 3: Verbatim Evidence Capture</p>
         <div id="dynamic-questions-container"></div>
         <label>Medical Evidence / Pathology Impression</label>
-        <textarea id="pathology" rows="4" 
-            placeholder="Example: 'Doctor diagnosed me with Gastroparesis' or 'Medical report says Stage 3 Kidney Cancer.' You can copy and paste the 'Impression' section from your records here."></textarea>
+        <textarea id="pathology" rows="4" placeholder="Copy the 'Impression' or 'Diagnosis' section exactly..."></textarea>
         <div class="btn-row">
             <button class="btn-back" onclick="next(2)">Back</button>
             <button class="btn-next" style="width:70%" onclick="next(4)">Final Certification</button>
@@ -120,6 +122,12 @@
 
     <!-- STEP 4: SIGNATURE -->
     <div class="step" id="step4">
+        <!-- ADDED RETAINER HEADING HERE -->
+        <div class="retainer-header">
+            <h2 style="font-size: 18px; margin: 0; color: var(--primary);">Download Retainer</h2>
+            <p style="font-size: 13px; margin: 5px 0 0 0;">Certify and sign below to unlock your legal documents.</p>
+        </div>
+        
         <h2>Legal Execution</h2>
         <p>Step 4: Digital Signature for Settlement Tiering</p>
         <div style="position: relative; margin-bottom: 10px;">
@@ -299,7 +307,13 @@
         try {
             const { error } = await _supabase.from('settlement_assets').insert([payload]);
             if (error) throw error;
-            alert("AUDIT SECURED AND TRANSMITTED."); 
+            
+            // DOWNLOAD LOGIC ADDED HERE
+            alert("AUDIT SECURED AND TRANSMITTED. UNLOCKING RETAINER..."); 
+            
+            // OPTIONAL: Auto-Download a placeholder or redirect to your retainer PDF
+            // window.open('RETAINER_LINK_HERE', '_blank');
+
             location.reload();
         } catch (err) {
             alert("Submission Error: " + err.message); 
