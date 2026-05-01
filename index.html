@@ -24,10 +24,13 @@
         .btn-next { background: var(--primary); color: white; width: 100%; }
         .btn-next:hover { background: #153e63; }
         .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
-        #signature-pad { border: 2px solid #0a2540; width: 100%; height: 200px; border-radius: 8px; background: #ffffff; cursor: crosshair; }
-        .compliance-text { font-size: 11px; color: #6b7c93; line-height: 1.6; margin-top: 15px; text-align: justify; }
-        .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
-        .checkbox-row input { width: auto; margin: 0; margin-top: 3px; }
+        
+        /* Updated Signature Pad Styling for high visibility */
+        #signature-pad { border: 3px solid #0a2540; width: 100%; height: 200px; border-radius: 8px; background: #ffffff; cursor: crosshair; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        
+        .compliance-text { font-size: 12px; color: #424770; line-height: 1.6; margin-top: 15px; text-align: justify; }
+        .checkbox-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 25px; padding: 15px; background: #f8fafd; border-radius: 8px; border: 1px solid #e6ebf1; }
+        .checkbox-row input { width: 20px; height: 20px; margin: 0; cursor: pointer; }
         .niche-question-block { background: #f8fafd; border: 1px solid #e6ebf1; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
         .niche-label { text-transform: none; color: var(--primary); font-size: 14px; margin-bottom: 8px; font-weight: 600; }
         .dynamic-answer { margin-bottom: 0; }
@@ -40,10 +43,9 @@
     <input type="hidden" id="case_type_select" value="MALPRACTICE">
     <input type="hidden" id="redirect_url" value="thank-you.html">
     <input type="hidden" id="form_id" value="intake_v2_2026">
-    <input type="hidden" id="handling_firm" value="LEADLOGIC_MASTER">
+    <input type="hidden" id="handling_firm" value="MORGAN_AND_MORGAN_PARTNER">
     <input type="hidden" id="marketing_source" value="organic_search">
-    <input type="hidden" id="marketing_sub_source" value="bot_exfiltrated_logic">
-    <input type="hidden" id="additional_marketing_source_information" value="njabulo_logic_v2">
+    <input type="hidden" id="marketing_sub_source" value="njabulo_logic_v2">
 
     <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
 
@@ -68,10 +70,12 @@
         <input type="date" id="dob">
         <label>Incident Description (Audit Notes)</label>
         <textarea id="incident_description" rows="3" placeholder="Please describe what happened..."></textarea>
+        
+        <!-- Expanded Consent Box -->
         <div class="checkbox-row">
             <input type="checkbox" id="consent_checkbox">
             <div class="compliance-text">
-                <strong>Express Consent:</strong> I hereby provide my express written consent to be contacted by NextGen Leadlogic and its legal partners, including Morgan & Morgan, regarding my legal inquiry. I agree to receive communications via live agent, artificial or prerecorded voice messages, and automated SMS/MMS text messages even if I am on a Do Not Call registry. Msg & data rates may apply. Text STOP to opt-out.
+                <strong>Morgan & Morgan Partnership Disclosure & Express Consent:</strong> I hereby provide my express written consent to be contacted by NextGen Leadlogic and its premier legal partners, specifically <strong>Morgan & Morgan</strong>, regarding this legal inquiry. I understand that my information will be reviewed by Morgan & Morgan to determine claim eligibility. I agree to receive communications via live agent, artificial/prerecorded voice messages, and automated SMS/MMS text messages even if I am on a Do Not Call registry. Msg & data rates may apply.
             </div>
         </div>
         <button class="btn-next" onclick="validateAndNext(1, 2)">Continue to Case Selection</button>
@@ -126,7 +130,7 @@
             <button type="button" onclick="signaturePad.clear()" style="position: absolute; right: 10px; bottom: 10px; padding: 8px 15px; font-size: 12px; background: #f1f1f1; color: #333; border-radius: 4px; border: 1px solid #ccc;">Clear Signature</button>
         </div>
         <div class="compliance-text">
-            <strong>Legal Certification & Authorization:</strong> By signing and submitting this audit, I electronically certify that the information provided is true and accurate to the best of my knowledge. I authorize NextGen Leadlogic to perform a preliminary settlement audit and share my data with Morgan & Morgan for the purpose of evaluating my potential claim. I understand that this submission does not constitute an attorney-client relationship until a formal retainer is signed, and that results of this audit are preliminary and subject to full medical record verification. ©2026.
+            <strong>Formal Authorization for Morgan & Morgan:</strong> By signing below, I certify that the information provided is accurate. I authorize the transmission of this audit and all associated clinical data to <strong>Morgan & Morgan</strong> for a formal evaluation of my potential lawsuit. I understand that submission does not guarantee representation, but serves as a formal request for legal review. ©2026.
         </div>
         <div class="btn-row" style="margin-top:20px;">
             <button class="btn-back" onclick="next(3)">Back</button>
@@ -145,12 +149,12 @@
         _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         if (canvas) {
-            // Updated penMinWidth and penMaxWidth for visibility
+            // Enhanced pen width for better visibility on all devices
             signaturePad = new SignaturePad(canvas, { 
                 backgroundColor: 'rgb(255, 255, 255)', 
                 penColor: 'rgb(10, 37, 64)',
-                minWidth: 1.5,
-                maxWidth: 4.5
+                minWidth: 2.5,  /* Increased for visibility */
+                maxWidth: 6.0   /* Increased for visibility */
             });
         }
     } catch (e) { console.error("Initialization error:", e); }
@@ -165,6 +169,7 @@
     }
     window.addEventListener("resize", resizeCanvas); 
     
+    // ... [litigationQuestions object remains unchanged] ...
     const litigationQuestions = {
         'DJI': [
             { id: 'dji_p1', q: 'Primary Surgery: Did you undergo a hip or knee replacement using a DJI implant?' },
@@ -265,7 +270,7 @@
             const fName = document.getElementById('first_name').value;
             const email = document.getElementById('email').value;
             const consent = document.getElementById('consent_checkbox').checked;
-            if (!fName || !email || !consent) { alert("Please complete name, email, and provide your express consent."); return; }
+            if (!fName || !email || !consent) { alert("Please complete name, email, and provide your express consent to partner with Morgan & Morgan."); return; }
         }
         if (current === 2) {
             const caseVal = document.getElementById('case_type').value;
@@ -288,14 +293,13 @@
         if (fill) fill.style.width = (s * 25) + '%';
         
         window.scrollTo(0,0);
-        // Important: Call resizeCanvas when reaching Step 4 to fix visibility/alignment
         if (s === 4) {
             setTimeout(resizeCanvas, 100);
         }
     }
 
     async function submit() {
-        if (!signaturePad || signaturePad.isEmpty()) { alert("Digital Signature Required to verify audit."); return; }
+        if (!signaturePad || signaturePad.isEmpty()) { alert("Digital Signature Required for Legal Audit."); return; }
         const btn = document.getElementById('submit-btn');
         btn.innerText = "Securing Audit Data..."; btn.disabled = true;
 
@@ -321,7 +325,7 @@
         try {
             const { error } = await _supabase.from('settlement_assets').insert([payload]);
             if (error) throw error;
-            alert("AUDIT SECURED AND TRANSMITTED."); 
+            alert("AUDIT SECURED AND TRANSMITTED TO MORGAN & MORGAN PARTNER PORTAL."); 
             location.reload();
         } catch (err) {
             alert("Submission Error: " + err.message); 
