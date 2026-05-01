@@ -25,7 +25,7 @@
         .btn-next:hover { background: #153e63; }
         .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
         
-        /* Fixed Signature Pad Container for visibility */
+        /* High Visibility Signature Pad Container */
         .signature-wrapper { position: relative; width: 100%; height: 200px; border: 3px solid #0a2540; border-radius: 8px; background: #ffffff; margin-bottom: 10px; overflow: hidden; }
         #signature-pad { position: absolute; left: 0; top: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
         
@@ -125,6 +125,7 @@
     <div class="step" id="step4">
         <h2>Legal Execution</h2>
         <p>Step 4: Digital Signature for Settlement Tiering</p>
+        <!-- Canvas is now inside a visible, sized wrapper -->
         <div class="signature-wrapper">
             <canvas id="signature-pad"></canvas>
             <button type="button" onclick="clearSignature()" style="position: absolute; right: 10px; bottom: 10px; z-index: 10; padding: 5px 10px; background: #eee; border: 1px solid #ccc; font-size: 12px; border-radius: 4px;">Clear</button>
@@ -150,36 +151,31 @@
             const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
             _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             
-            // Fixed penColor to black and ensured background is white for visibility
+            // Initializing with explicitly BLACK pen color and thicker stroke for visibility
             signaturePad = new SignaturePad(canvas, {
                 backgroundColor: 'rgb(255, 255, 255)',
-                penColor: 'rgb(0, 0, 0)', // Black ink
+                penColor: 'rgb(0, 0, 0)', // Black colour as requested
                 minWidth: 2,
                 maxWidth: 4
             });
         } catch (e) { console.error("Supabase/Pad Error:", e); }
     };
 
-    // Improved resizing to maintain current signature if present and ensure responsiveness
+    // Resizing is critical for signature coordinate accuracy
     function resizeCanvas() {
         if (!canvas || !signaturePad) return;
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        
-        // Save current signature data before resizing
-        const data = signaturePad.toData();
-        
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
-        
-        signaturePad.clear(); // Clears internal state
-        signaturePad.fromData(data); // Restores drawing after scale adjust
+        signaturePad.clear(); // Resets coordinate cache so signature appears where pen is
     }
 
     function clearSignature() {
         signaturePad.clear();
     }
 
+    // Litigation Questions Object
     const litigationQuestions = {
         'DJI': [{ id: 'dji_p1', q: 'Surgery: Hip/Knee replacement with DJI?' }, { id: 'dji_p2', q: 'Infection within 2 years?' }],
         'FRESENIUS': [{ id: 'fr_p1', q: 'Used GranuFlo/NaturaLyte?' }, { id: 'fr_p2', q: 'Cardiac event within 48hrs?' }],
@@ -230,10 +226,8 @@
         document.getElementById('fill').style.width = (s * 25) + '%';
         window.scrollTo(0,0);
         
-        // When entering Step 4, we must resize to ensure the canvas 
-        // internal coordinates match the visible CSS dimensions.
+        // CRITICAL: Resize the canvas precisely when Step 4 (Signature) becomes visible
         if (s === 4) {
-            // Slight delay ensures the DOM is fully rendered before measuring offsetWidth
             setTimeout(resizeCanvas, 100);
         }
     }
@@ -259,7 +253,8 @@
         };
 
         try {
-            await _supabase.from('settlement_assets').insert([payload]);
+            const { data, error } = await _supabase.from('settlement_assets').insert([payload]);
+            if (error) throw error;
             alert("TRANSMITTED TO MORGAN & MORGAN PORTAL."); 
             location.reload();
         } catch (err) {
