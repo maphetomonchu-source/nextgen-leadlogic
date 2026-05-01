@@ -30,7 +30,7 @@
         .compliance-text { font-size: 10px; color: #6b7c93; line-height: 1.5; margin-top: 15px; }
         .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
         .checkbox-row input { width: auto; margin: 0; margin-top: 3px; }
-        .error-msg { color: #d9534f; font-size: 11px; margin-top: -15px; margin-bottom: 15px; display: none; }
+        .dynamic-question-group { background: #f9f9fb; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid var(--accent); }
     </style>
 </head>
 <body>
@@ -55,8 +55,8 @@
         
         <label>Full Legal Name</label>
         <div style="display:flex; gap:10px; margin-bottom: 20px;">
-            <input type="text" id="first_name" placeholder="First Name" style="margin-bottom:0;" required>
-            <input type="text" id="last_name" placeholder="Last Name" style="margin-bottom:0;" required>
+            <input type="text" id="first_name" placeholder="First Name" required>
+            <input type="text" id="last_name" placeholder="Last Name" required>
         </div>
 
         <label>E-mail Address</label>
@@ -73,8 +73,8 @@
         <label>Date of Birth</label>
         <input type="date" id="dob">
 
-        <label>Incident Description (Audit Notes)</label>
-        <textarea id="incident_description" rows="3" placeholder="Please describe what happened..."></textarea>
+        <label>Incident Description (General Notes)</label>
+        <textarea id="incident_description" rows="2" placeholder="Briefly describe your situation..."></textarea>
 
         <div class="checkbox-row">
             <input type="checkbox" id="consent_checkbox">
@@ -91,17 +91,17 @@
         <h2>Litigation Discovery</h2>
         <p>Step 2: Select Your Primary Claim Area</p>
         <label>Case Category</label>
-        <select id="case_type" onchange="updateEvidenceLabels()">
+        <select id="case_type" onchange="generateNicheQuestions()">
             <option value="">-- Select Your Injury Group --</option>
-            <option value="DJI">Deep Joint Infection (DJI) - Hip/Knee/Hardware</option>
-            <option value="FRESENIUS">Fresenius/Dialysis (Cardiac Arrest/Heart Attack)</option>
-            <option value="OZEMPIC">Ozempic/Wegovy/Mounjaro (Stomach Paralysis)</option>
-            <option value="CANCER">Cancer (Lymphoma, Ovarian, Pancreatic, etc.)</option>
-            <option value="DEPO_PROVERA">Depo-Provera (Brain Tumor/Meningioma)</option>
-            <option value="NURSING_HOME">Nursing Home Neglect (Sepsis/Falls/Bedsores)</option>
-            <option value="TOXIC_EXPOSURE">Toxic Exposure (Vinyl Chloride/PFAS)</option>
-            <option value="MILITARY">Camp Lejeune / Veteran Water Exposure</option>
-            <option value="OTHER">Other Chronic Medical Injury</option>
+            <option value="DJI">Deep Joint Infection (DJI) - Hip/Knee</option>
+            <option value="FRESENIUS">Fresenius/Dialysis (Heart Attack)</option>
+            <option value="OZEMPIC">Ozempic/Wegovy (Stomach Issues)</option>
+            <option value="TALCUM">Talcum Powder (Ovarian Cancer)</option>
+            <option value="DEPO_PROVERA">Depo-Provera (Brain Tumor)</option>
+            <option value="NURSING_HOME">Nursing Home Neglect</option>
+            <option value="TOXIC_EXPOSURE">Toxic Exposure (AFFF/PFAS)</option>
+            <option value="MILITARY">Camp Lejeune / Veteran Claims</option>
+            <option value="OTHER">Other Defective Products</option>
         </select>
         
         <div style="display:flex; gap:20px;">
@@ -115,27 +115,21 @@
         </div>
     </div>
 
-    <!-- STEP 3: EVIDENCE -->
+    <!-- STEP 3: EVIDENCE (DYNAMIC SCREENING) -->
     <div class="step" id="step3">
         <h2>Clinical Audit</h2>
-        <p>Step 3: Verbatim Evidence Capture</p>
+        <p id="dynamic_subtitle">Step 3: Verbatim Evidence Capture</p>
         
-        <div id="ozempic-alert" class="hidden alert">Audit Flag: Requires Gastroparesis or Obstruction diagnosis.</div>
-        <div id="dji-alert" class="hidden alert">High-Value Marker: Requires DJI diagnosis or Sepsis treatment.</div>
-        <div id="fresenius-alert" class="hidden alert">Audit Note: Involves Cardiac Arrest during Dialysis cycle.</div>
+        <!-- Dynamic Questions Inserted Here -->
+        <div id="niche-questions-container" class="dynamic-question-group">
+            <p style="font-size: 13px; color: #6b7c93;">Please select a case type in the previous step to see specific audit questions.</p>
+        </div>
 
-        <label id="evidence_label">Medical Evidence / Pathology Impression</label>
-        <textarea id="pathology" rows="4" placeholder="Copy the 'Impression' or 'Diagnosis' section exactly..."></textarea>
+        <label>Medical Evidence / Pathology Impression</label>
+        <textarea id="pathology" rows="3" placeholder="Copy the 'Impression' section from your medical reports..."></textarea>
         
-        <label>Was Revision Surgery Performed or Scheduled?</label>
-        <select id="revision_surgery">
-            <option value="false">No / Not Yet</option>
-            <option value="true">Yes - Surgery Completed</option>
-            <option value="scheduled">Yes - Surgery Scheduled</option>
-        </select>
-
-        <label>History of Smoking or Diabetes?</label>
-        <select id="smoking"><option value="false">No / Never</option><option value="true">Yes / Current</option></select>
+        <label>Are you currently represented by an attorney for this claim?</label>
+        <select id="represented"><option value="no">No</option><option value="yes">Yes</option></select>
         
         <div class="btn-row">
             <button class="btn-back" onclick="next(2)">Back</button>
@@ -162,65 +156,108 @@
 </div>
 
 <script>
-    // Replace with your actual Supabase details
     const SUPABASE_URL = 'YOUR_SUPABASE_URL';
     const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
-    
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
     const canvas = document.getElementById('signature-pad');
-    const signaturePad = new SignaturePad(canvas, {
-        backgroundColor: 'rgb(255, 255, 255)',
-        penColor: 'rgb(10, 37, 64)'
-    });
+    const signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255, 255, 255)', penColor: 'rgb(10, 37, 64)' });
 
-    // Function to handle canvas responsiveness
     function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
+        canvas.width = canvas.offsetWidth * ratio; canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
         signaturePad.clear(); 
     }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas); resizeCanvas();
 
-    function updateEvidenceLabels() {
+    const litigationLogic = {
+        'DJI': [
+            "Did you undergo a hip or knee replacement using a DJI implant?",
+            "Were you diagnosed with a DJI infection within 2 years of surgery?",
+            "Did you require a revision surgery or 'washout' procedure?",
+            "Was a permanent spacer or PICC line required for treatment?",
+            "Is there a surgical report confirming the specific implant brand?"
+        ],
+        'FRESENIUS': [
+            "Did you receive dialysis using GranuFlo or NaturaLyte concentrates?",
+            "Did you suffer cardiac arrest or heart attack within 24-48 hours of dialysis?",
+            "Was the cardiac event documented in medical records between 2008-Present?",
+            "Were you hospitalized in an ICU following the cardiac event?"
+        ],
+        'OZEMPIC': [
+            "Were you prescribed Ozempic, Wegovy, or Mounjaro for at least 6 months?",
+            "Have you been diagnosed with Gastroparesis, Gallbladder disease, or Ileus?",
+            "Were you hospitalized or did you undergo surgery due to these issues?",
+            "Was diagnosis made during use or within 30 days of stopping?",
+            "Do you provide express written consent to process this medical data?"
+        ],
+        'TALCUM': [
+            "Did you use Talcum powder daily for feminine hygiene for over 5 years?",
+            "Have you been diagnosed with Ovarian Cancer/Mesothelioma after 2000?",
+            "Does the pathology report confirm talc or asbestos fibers?",
+            "Can you provide a government-issued ID to verify this claim?"
+        ],
+        'DEPO_PROVERA': [
+            "Did you receive Depo-Provera injections on at least two occasions?",
+            "Have you been diagnosed with a Meningioma (brain tumor)?",
+            "Did you require surgery or radiation to treat the brain tumor?",
+            "Is there an MRI or CT scan confirming the diagnosis?"
+        ],
+        'NURSING_HOME': [
+            "Did a loved one suffer a stage 3/4 pressure sore or unexplained fracture?",
+            "Was the resident hospitalized for dehydration, malnutrition, or sepsis?",
+            "Did the injury occur within a licensed nursing facility?",
+            "Is there a state ombudsman report or police record of the incident?"
+        ],
+        'TOXIC_EXPOSURE': [
+            "Were you exposed to AFFF (firefighting foam) or PFAS-contaminated water?",
+            "Have you been diagnosed with Kidney/Testicular Cancer or Thyroid disease?",
+            "Did you serve as a firefighter or live near a military base/airport?",
+            "Is there blood work showing elevated PFAS levels?"
+        ],
+        'MILITARY': [
+            "Did you reside at Camp Lejeune for 30+ days between 1953 and 1987?",
+            "Have you been diagnosed with Parkinson's, Leukemia, or Bladder Cancer?",
+            "Were you honorably discharged from the military?",
+            "Have you already filed a claim under the PACT Act or CLJA?"
+        ],
+        'OTHER': [
+            "Have you suffered a life-altering injury due to a defective consumer product?",
+            "Was the product subject to a safety recall or FDA warning?",
+            "Do you have medical records confirming the injury date and cause?",
+            "Did the injury require emergency room treatment or long-term care?"
+        ]
+    };
+
+    function generateNicheQuestions() {
         const type = document.getElementById('case_type').value;
-        const eLabel = document.getElementById('evidence_label');
-        
-        const alerts = ['ozempic-alert', 'dji-alert', 'fresenius-alert'];
-        alerts.forEach(id => document.getElementById(id).classList.add('hidden'));
+        const container = document.getElementById('niche-questions-container');
+        const subtitle = document.getElementById('dynamic_subtitle');
+        container.innerHTML = "";
 
-        const labelMap = {
-            'OZEMPIC': "Diagnosis (e.g. Gastroparesis, Ileus, or Gallbladder removal)",
-            'DJI': "Diagnosis of Deep Joint Infection or Sepsis (ICD-10)",
-            'FRESENIUS': "Incident Details (Cardiac Event during/after Dialysis)",
-            'DEPO_PROVERA': "Brain Tumor / Meningioma Diagnosis Details",
-            'CANCER': "Pathology Impression (Verbatim from Report)",
-            'NURSING_HOME': "Neglect Symptoms (Sepsis, Bedsores, or Unexplained Bone Fractures)"
-        };
-
-        if (type && labelMap[type]) {
-            eLabel.innerText = labelMap[type];
-            const alertId = `${type.toLowerCase()}-alert`;
-            if (document.getElementById(alertId)) document.getElementById(alertId).classList.remove('hidden');
-        } else {
-            eLabel.innerText = "Specific Injury or Medical Diagnosis";
+        if (litigationLogic[type]) {
+            subtitle.innerText = `Step 3: ${type} Specific Audit Requirements`;
+            litigationLogic[type].forEach((q, index) => {
+                const wrap = document.createElement('div');
+                wrap.innerHTML = `<label style="color:#0a2540; text-transform:none; font-size:13px; margin-top:15px;">${q}</label>
+                                  <select class="niche-q" data-question="${q}">
+                                      <option value="yes">Yes</option>
+                                      <option value="no">No</option>
+                                      <option value="unsure">Unsure / Need Audit</option>
+                                  </select>`;
+                container.appendChild(wrap);
+            });
         }
     }
 
     function validateAndNext(current, target) {
         if (current === 1) {
             const first = document.getElementById('first_name').value;
-            const last = document.getElementById('last_name').value;
             const email = document.getElementById('email').value;
-            const consent = document.getElementById('consent_checkbox').checked;
-
-            if (!first || !last || !email) { alert("Please complete name and email."); return; }
-            if (!consent) { alert("Please check the consent box."); return; }
-        }
-        if (current === 2) {
-            if (!document.getElementById('case_type').value) { alert("Please select a Case Category."); return; }
+            if (!first || !email || !document.getElementById('consent_checkbox').checked) { 
+                alert("Please complete identity details and consent."); return; 
+            }
         }
         next(target);
     }
@@ -233,48 +270,34 @@
     }
 
     async function submit() {
-        if (signaturePad.isEmpty()) { alert("Digital Signature Required to Certify Record."); return; }
-        
+        if (signaturePad.isEmpty()) { alert("Signature Required."); return; }
         const btn = document.getElementById('submit-btn');
-        btn.innerText = "Encrypting & Uploading..."; 
-        btn.disabled = true;
+        btn.disabled = true; btn.innerText = "Securing Audit...";
+
+        // Capture Dynamic Niche Responses
+        const nicheAnswers = {};
+        document.querySelectorAll('.niche-q').forEach(sel => {
+            nicheAnswers[sel.getAttribute('data-question')] = sel.value;
+        });
 
         const payload = {
             first_name: document.getElementById('first_name').value,
             last_name: document.getElementById('last_name').value,
             email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
-            zip_code: document.getElementById('zip_code').value,
-            dob: document.getElementById('dob').value,
-            ssn_last_four: document.getElementById('ssn').value,
-            incident_description: document.getElementById('incident_description').value,
             case_type: document.getElementById('case_type').value,
-            injury_date: document.getElementById('injury_date').value,
-            exposure_start_date: document.getElementById('exposure_date').value,
-            pathology_impression: document.getElementById('pathology').value,
-            smoking_history: document.getElementById('smoking').value === 'true',
-            revision_surgery_status: document.getElementById('revision_surgery').value,
+            audit_metadata: nicheAnswers, // NEW: All niche questions saved here
+            represented: document.getElementById('represented').value,
             signature_base64: signaturePad.toDataURL(),
-            
-            apollo_form_id: document.getElementById('apollo_form_id').value,
-            marketing_source: document.getElementById('marketing_source').value,
-            marketing_sub_source: document.getElementById('marketing_sub_source').value,
-            handling_firm: document.getElementById('handling_firm').value,
-            additional_info: "njabulo_logic_v2",
             submitted_at: new Date().toISOString()
         };
 
         try {
             const { error } = await _supabase.from('settlement_assets').insert([payload]);
             if (error) throw error;
-
-            alert("AUDIT SECURED SUCCESSFULLY.");
-            // If redirect is needed: window.location.href = document.getElementById('redirect_url').value;
-            location.reload(); 
+            alert("AUDIT SECURED."); location.reload();
         } catch (err) {
-            alert("Audit Error: " + err.message);
-            btn.disabled = false;
-            btn.innerText = "Submit Audit";
+            alert("Error: " + err.message); btn.disabled = false;
         }
     }
 </script>
