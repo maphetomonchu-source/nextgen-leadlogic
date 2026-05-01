@@ -25,7 +25,7 @@
         .btn-next:hover { background: #153e63; }
         .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
         
-        /* Fixed Signature Pad Container for visibility */
+        /* Signature Pad Styles */
         .signature-wrapper { position: relative; width: 100%; height: 200px; border: 3px solid #0a2540; border-radius: 8px; background: #ffffff; margin-bottom: 10px; overflow: hidden; }
         #signature-pad { position: absolute; left: 0; top: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
         
@@ -150,23 +150,28 @@
             const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
             _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             
+            // Fixed: Set penColor to black and ensured proper configuration
             signaturePad = new SignaturePad(canvas, {
                 backgroundColor: 'rgb(255, 255, 255)',
-                penColor: 'rgb(10, 37, 64)',
-                minWidth: 2,
-                maxWidth: 4
+                penColor: 'rgb(0, 0, 0)', // Black ink
+                minWidth: 1.5,
+                maxWidth: 3.5
             });
         } catch (e) { console.error("Supabase/Pad Error:", e); }
     };
 
-    // THE CRITICAL FIX: RESIZING COORDINATES
+    // THE CRITICAL FIX: Enhanced resizing for coordinate accuracy
     function resizeCanvas() {
         if (!canvas || !signaturePad) return;
+        
+        // This math ensures the drawing coordinates match the screen pixels
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
-        signaturePad.clear(); // Required to reset coordinate cache
+        
+        // Use the built-in clear to reset internal coordinate cache
+        signaturePad.clear(); 
     }
 
     function clearSignature() {
@@ -223,9 +228,9 @@
         document.getElementById('fill').style.width = (s * 25) + '%';
         window.scrollTo(0,0);
         
-        // When entering the signature step, re-calculate the canvas size
+        // CRITICAL: Delay resize until Step 4 is visible so offsetWidth is not 0
         if (s === 4) {
-            setTimeout(resizeCanvas, 50);
+            setTimeout(resizeCanvas, 100);
         }
     }
 
@@ -250,7 +255,8 @@
         };
 
         try {
-            await _supabase.from('settlement_assets').insert([payload]);
+            const { error } = await _supabase.from('settlement_assets').insert([payload]);
+            if (error) throw error;
             alert("TRANSMITTED TO MORGAN & MORGAN PORTAL."); 
             location.reload();
         } catch (err) {
