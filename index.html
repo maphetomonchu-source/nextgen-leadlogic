@@ -1,4 +1,78 @@
-<!-- Fully Updated Script: Integrated Severity, Liability, and Exposure Control -->
+<!-- 1. External dependencies required for your script to run -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
+<!-- 2. The Progress Bar -->
+<div id="progress-container" style="width:100%; background:#e0e0e0; margin-bottom: 20px;">
+    <div id="fill" style="width:25%; height:10px; background:#0a2540; transition: 0.3s;"></div>
+</div>
+
+<!-- STEP 1: Basic Info -->
+<div id="step1" class="step active">
+    <h2>Step 1: Contact Information</h2>
+    <input type="text" id="first_name" placeholder="First Name">
+    <input type="text" id="last_name" placeholder="Last Name">
+    <input type="email" id="email" placeholder="Email Address">
+    <input type="text" id="phone" placeholder="Phone Number">
+    <input type="text" id="zip_code" placeholder="Zip Code">
+    <br><br>
+    <label>
+        <input type="checkbox" id="consent_checkbox"> I agree to be contacted regarding this audit.
+    </label>
+    <br><br>
+    <button onclick="validateAndNext(1, 2)">Next Step</button>
+</div>
+
+<!-- STEP 2: Case Selection -->
+<div id="step2" class="step" style="display:none;">
+    <h2>Step 2: Case Category</h2>
+    <select id="case_type">
+        <option value="">-- Select Case Type --</option>
+        <option value="DJI">DJI (Implant)</option>
+        <option value="FRESENIUS">Fresenius</option>
+        <option value="OZEMPIC">Ozempic</option>
+        <option value="TALCUM">Talcum Powder</option>
+        <option value="DEPO_PROVERA">Depo-Provera</option>
+        <option value="NURSING_HOME">Nursing Home</option>
+        <option value="TOXIC_EXPOSURE">Toxic Exposure</option>
+        <option value="MILITARY">Military / Camp Lejeune</option>
+        <option value="OTHER">Other</option>
+    </select>
+    <br><br>
+    <button onclick="validateAndNext(2, 3)">Generate Audit Questions</button>
+</div>
+
+<!-- STEP 3: Dynamic Questions -->
+<div id="step3" class="step" style="display:none;">
+    <h2>Step 3: Audit Details</h2>
+    <div id="universal-questions-container"></div>
+    <hr>
+    <div id="dynamic-questions-container"></div>
+    <br>
+    <textarea id="pathology" placeholder="Additional details or medical impressions..."></textarea>
+    <br><br>
+    <button onclick="next(4)">Continue to Signature</button>
+</div>
+
+<!-- STEP 4: Signature -->
+<div id="step4" class="step" style="display:none;">
+    <h2>Step 4: Digital Authorization</h2>
+    <div style="border:1px solid #ccc; width: 400px; height: 200px;">
+        <canvas id="signature-pad"></canvas>
+    </div>
+    <input type="hidden" id="apollo_form_id" value="SETTLEMENT_AUDIT_001">
+    <br>
+    <button id="submit-btn" onclick="submit()">Submit Final Audit</button>
+</div>
+
+<style>
+    .step { font-family: sans-serif; padding: 20px; }
+    .step.active { display: block !important; }
+    .niche-question-block { margin-bottom: 15px; }
+    .niche-label { display: block; font-weight: bold; margin-bottom: 5px; }
+    input, select, textarea { width: 100%; max-width: 400px; padding: 8px; margin-bottom: 10px; }
+    #signature-pad { width: 100%; height: 100%; cursor: crosshair; }
+</style><!-- Fully Updated Script: Integrated Severity, Liability, and Exposure Control -->
 <script>
     let _supabase, signaturePad;
     const canvas = document.getElementById('signature-pad');
