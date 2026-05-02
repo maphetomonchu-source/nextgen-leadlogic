@@ -1,4 +1,4 @@
-<!-- Replace your <script> section with this updated version -->
+<!-- Fully Updated Script: Integrated Severity, Liability, and Exposure Control -->
 <script>
     let _supabase, signaturePad;
     const canvas = document.getElementById('signature-pad');
@@ -31,8 +31,10 @@
 
     window.addEventListener("resize", resizeCanvas); 
 
-    // UPDATED UNIVERSAL QUESTIONS: High-Value & Contact Optimization
+    // UPDATED UNIVERSAL QUESTIONS: Integrated Severity Scoring and Liability
     const universalQualifiers = [
+        { id: 'univ_severity', q: 'Injury Severity Level?', type: 'select', options: ['Mild', 'Moderate', 'Severe', 'Life-threatening'] },
+        { id: 'univ_warned', q: 'Were you warned of side effects before use?', type: 'select', options: ['No', 'Yes', 'Unsure'] },
         { id: 'univ_1', q: 'Are you filing for yourself or someone else?', type: 'select', options: ['Myself', 'Someone Else'] },
         { id: 'univ_2', q: 'Is the injured person deceased?', type: 'select', options: ['No', 'Yes'] },
         { id: 'univ_diagn', q: 'Was diagnosis confirmed by a specialist?', type: 'select', options: ['Yes', 'No', 'Unsure'] },
@@ -45,7 +47,7 @@
         { id: 'univ_9', q: 'Can we call you immediately today?', type: 'select', options: ['Yes', 'No'] }
     ];
 
-    // UPDATED LITIGATION QUESTIONS: Defense-Proofing Added
+    // UPDATED LITIGATION QUESTIONS: Integrated Exposure Control (Consistency & Usage)
     const litigationQuestions = {
         'DJI': [
             { id: 'dji_p1', q: 'Implant Brand: What brand was the implant? (if known)', type: 'text' },
@@ -59,16 +61,20 @@
             { id: 'fr_recall', q: 'Were you aware of GranuFlo/NaturaLyte recalls?', type: 'select', options: ['Yes', 'No'] }
         ],
         'OZEMPIC': [
+            { id: 'glp_usage', q: 'Usage Frequency?', type: 'select', options: ['Continuous Use', 'Intermittent Use'] },
+            { id: 'glp_dose', q: 'Dosage Consistency: Did you follow prescribed dosing?', type: 'select', options: ['Consistent', 'Inconsistent'] },
             { id: 'glp_p1', q: 'Was the product prescribed by a doctor or self-used?', type: 'select', options: ['Prescribed', 'Self-Used'] },
             { id: 'glp_p3', q: 'Diagnosis: Have you been diagnosed with Gastroparesis or Ileus?', type: 'select', options: ['Yes', 'No'] },
             { id: 'glp_report', q: 'Did you report symptoms to a doctor early?', type: 'select', options: ['Yes', 'No'] }
         ],
         'TALCUM': [
+            { id: 'tlc_usage', q: 'Usage Frequency?', type: 'select', options: ['Continuous Use', 'Intermittent Use'] },
             { id: 'tlc_p1', q: 'Brand Identification: Which brand did you use (e.g. J&J)?', type: 'text' },
             { id: 'tlc_p3', q: 'Diagnosis: Confirmed Ovarian Cancer or Mesothelioma?', type: 'select', options: ['Yes', 'No'] },
             { id: 'tlc_lawsuit', q: 'Have you participated in previous class actions for this?', type: 'select', options: ['No', 'Yes'] }
         ],
         'DEPO_PROVERA': [
+            { id: 'dp_usage', q: 'Usage Frequency?', type: 'select', options: ['Continuous Use', 'Intermittent Use'] },
             { id: 'dp_p3', q: 'Diagnosis: Confirmed Meningioma (brain tumor)?', type: 'select', options: ['Yes', 'No'] },
             { id: 'dp_timeline', q: 'Time gap between first injection and symptoms?', type: 'text', placeholder: 'e.g. 5 years' }
         ],
@@ -77,6 +83,7 @@
             { id: 'nh_p3', q: 'Injury: Pressure sore, fracture, or sepsis?', type: 'select', options: ['Yes', 'No'] }
         ],
         'TOXIC_EXPOSURE': [
+            { id: 'pfas_usage', q: 'Exposure Pattern?', type: 'select', options: ['Continuous Use', 'Intermittent Use'] },
             { id: 'pfas_p2', q: 'Source: Source of exposure (water system, employer, base)', type: 'text' },
             { id: 'pfas_p3', q: 'Diagnosis: Kidney/Testicular Cancer or Thyroid disease?', type: 'select', options: ['Yes', 'No'] },
             { id: 'pfas_emp', q: 'Does employer have exposure records?', type: 'select', options: ['Yes', 'No', 'Unsure'] }
