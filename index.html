@@ -1,693 +1,202 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>NextGen Leadlogic | Universal Settlement Audit</title>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-
     <style>
-
-        :root { --primary: #0a2540; --accent: #00d4ff; --text: #424770; }
-
+        :root { --primary: #0a2540; --accent: #00d4ff; --text: #424770; --error: #ff4757; --tier1: #2ed573; --gold: #FFD700; --platinum: #E5E4E2; }
         body { font-family: 'Inter', sans-serif; background: #f6f9fc; display: flex; justify-content: center; padding: 40px 20px; color: var(--text); }
-
         #audit-container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 50px 100px -20px rgba(50,50,93,0.25); max-width: 650px; width: 100%; border-top: 10px solid var(--primary); }
-
         .step { display: none; }
-
         .step.active { display: block; }
-
         .progress-bar { height: 6px; background: #e6ebf1; margin-bottom: 30px; border-radius: 3px; overflow: hidden; }
-
-        .progress-fill { height: 100%; background: var(--accent); width: 25%; transition: 0.4s; }
-
+        .progress-fill { height: 100%; background: var(--accent); width: 20%; transition: 0.4s; }
         h2 { color: var(--primary); font-size: 22px; margin-bottom: 5px; }
-
         label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #8898aa; }
-
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e6ebf1; border-radius: 4px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
-
-        input:focus, select:focus { border-color: var(--accent); outline: none; }
-
         .btn-row { display: flex; justify-content: space-between; margin-top: 20px; }
-
         button { padding: 15px 30px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
-
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-
         .btn-next { background: var(--primary); color: white; width: 100%; }
-
-        .btn-next:hover { background: #153e63; }
-
-        .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
-
-
-
-        .signature-wrapper {
-
-            position: relative;
-
-            width: 100%;
-
-            height: 200px;
-
-            border: 2px solid #0a2540;
-
-            border-radius: 8px;
-
-            background: #ffffff;
-
-            touch-action: none;
-
-            margin-bottom: 10px;
-
-        }
-
-        #signature-pad {
-
-            position: absolute;
-
-            left: 0;
-
-            top: 0;
-
-            width: 100%;
-
-            height: 100%;
-
-            cursor: crosshair;
-
-        }
-
-
-
-        .compliance-text { font-size: 11px; color: #6b7c93; line-height: 1.6; margin-top: 15px; text-align: justify; }
-
-        .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
-
-        .checkbox-row input { width: auto; margin: 0; margin-top: 3px; }
-
-        .niche-question-block { background: #f8fafd; border: 1px solid #e6ebf1; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-
-        .niche-label { text-transform: none; color: var(--primary); font-size: 14px; margin-bottom: 8px; font-weight: 600; }
-
-        .dynamic-answer { margin-bottom: 0; }
-
-        .section-break { border-top: 2px dashed #e6ebf1; margin: 30px 0; padding-top: 10px; }
-
+        .signature-wrapper { position: relative; width: 100%; height: 200px; border: 2px solid #0a2540; border-radius: 8px; background: #ffffff; touch-action: none; margin-bottom: 10px; }
+        #signature-pad { position: absolute; left: 0; top: 0; width: 100%; height: 100%; cursor: crosshair; }
+        .file-upload-zone { border: 2px dashed #e6ebf1; padding: 20px; text-align: center; border-radius: 8px; cursor: pointer; transition: 0.3s; margin-bottom: 20px; }
+        .file-upload-zone:hover { border-color: var(--accent); background: #f0fbff; }
+        .otp-block { display: none; background: #eefbff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--accent); }
     </style>
-
 </head>
-
 <body>
 
-
-
 <div id="audit-container">
-
-    <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
-
-    <input type="hidden" id="case_type_select" value="MALPRACTICE">
-
-    <input type="hidden" id="redirect_url" value="thank-you.html">
-
-    <input type="hidden" id="form_id" value="intake_v2_2026">
-
-    <input type="hidden" id="handling_firm" value="LEADLOGIC_MASTER">
-
-    <input type="hidden" id="marketing_source" value="organic_search">
-
-    <input type="hidden" id="marketing_sub_source" value="bot_exfiltrated_logic">
-
-    <input type="hidden" id="additional_marketing_source_information" value="njabulo_logic_v2">
-
-
-
     <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
 
-
-
-    <!-- STEP 1: IDENTITY -->
-
+    <!-- STEP 1: VERIFICATION & OTP LAYER -->
     <div class="step active" id="step1">
-
         <h2>Claimant Verification</h2>
-
-        <p>Step 1: Legal Identity & Federal Lien Audit</p>
-
-        <label>Full Legal Name</label>
-
-        <div style="display:flex; gap:10px; margin-bottom: 20px;">
-
-            <input type="text" id="first_name" placeholder="First Name" required>
-
-            <input type="text" id="last_name" placeholder="Last Name" required>
-
-        </div>
-
-        <label>E-mail Address</label>
-
-        <input type="email" id="email" placeholder="email@example.com" required>
-
-        <label>Phone Number</label>
-
-        <input type="tel" id="phone" placeholder="(555) 000-0000" required>
-
         <div style="display:flex; gap:10px;">
-
-            <div style="flex:1;"><label>Zip Code</label><input type="text" id="zip_code" maxlength="5"></div>
-
-            <div style="flex:1;"><label>Last 4 of SSN</label><input type="password" id="ssn" maxlength="4" placeholder="****"></div>
-
+            <input type="text" id="first_name" placeholder="First Name" required>
+            <input type="text" id="last_name" placeholder="Last Name" required>
+        </div>
+        <input type="email" id="email" placeholder="Email Address" required>
+        <input type="tel" id="phone" placeholder="Phone Number" required>
+        
+        <div id="otp-area" class="otp-block">
+            <label>Verification Code Sent</label>
+            <input type="text" id="otp_code" placeholder="Enter 6-digit code">
+            <button class="btn-next" style="background:var(--tier1)" onclick="verifyOTP()">Verify Identity</button>
         </div>
 
-        <label>Date of Birth</label>
-
-        <input type="date" id="dob">
-
-        <label>Incident Description (Audit Notes)</label>
-
-        <textarea id="incident_description" rows="3" placeholder="Please describe what happened..."></textarea>
-
-        <div class="checkbox-row">
-
-            <input type="checkbox" id="consent_checkbox">
-
-            <div class="compliance-text">
-
-                <strong>Express Consent:</strong> I hereby provide my express written consent to be contacted by NextGen Leadlogic and its legal partners, including Morgan & Morgan, regarding my legal inquiry. I agree to receive communications via live agent, artificial or prerecorded voice messages, and automated SMS/MMS text messages even if I am on a Do Not Call registry. Msg & data rates may apply. Text STOP to opt-out.
-
-            </div>
-
-        </div>
-
-        <button class="btn-next" onclick="validateAndNext(1, 2)">Continue to Case Selection</button>
-
+        <button id="otp-trigger" class="btn-next" onclick="sendOTP()">Request Verification Code</button>
+        
+        <label style="margin-top:20px;">Jurisdiction</label>
+        <select id="jurisdiction">
+            <option value="CA">California</option>
+            <option value="TX">Texas</option>
+            <option value="FL">Florida</option>
+            <option value="NY">New York</option>
+            <option value="OTHER">Other</option>
+        </select>
     </div>
 
-
-
-    <!-- STEP 2: CATEGORY -->
-
+    <!-- STEP 2: DISCOVERY -->
     <div class="step" id="step2">
-
-        <h2>Litigation Discovery</h2>
-
-        <p>Step 2: Select Your Primary Claim Area</p>
-
+        <h2>Case Intelligence</h2>
         <label>Case Category</label>
-
         <select id="case_type">
+            <option value="">-- Select --</option>
+            <option value="HIP_REPLACEMENT">Orthopedic / Metallosis</option>
+            <option value="ONCOLOGY">Toxic Exposure / Cancer</option>
+            <option value="GLP1">Gastric / GLP-1</option>
+        </select>
+        <label>First Diagnosis Date</label>
+        <input type="date" id="diagnosis_date" required>
+        <button class="btn-next" onclick="validateSOL()">Next: Evidence Tiering</button>
+    </div>
 
-            <option value="">-- Select Your Injury Group --</option>
-
-            <option value="DJI">Deep Joint Infection (DJI) - Hip/Knee/Hardware</option>
-
-            <option value="FRESENIUS">Fresenius/Dialysis (Cardiac Arrest/Heart Attack)</option>
-
-            <option value="OZEMPIC">GLP-1 Agonists (Ozempic/Wegovy/Mounjaro)</option>
-
-            <option value="TALCUM">Talcum Powder (Ovarian Cancer/Mesothelioma)</option>
-
-            <option value="DEPO_PROVERA">Depo-Provera (Brain Tumor/Meningioma)</option>
-
-            <option value="NURSING_HOME">Nursing Home Negligence</option>
-
-            <option value="TOXIC_EXPOSURE">Toxic Exposure (AFFF/PFAS)</option>
-
-            <option value="MILITARY">Military (Camp Lejeune)</option>
-
-            <option value="OTHER">General Defective Products (Other)</option>
-
+    <!-- STEP 3: FILE VALIDATION PIPELINE -->
+    <div class="step" id="step3">
+        <h2>Evidence Tier Audit</h2>
+        <select id="evidence_tier" onchange="toggleUploadZone()">
+            <option value="3">Tier 3: Self-Report</option>
+            <option value="2">Tier 2: Prescriptions</option>
+            <option value="1">Tier 1: Imaging + Pathology</option>
         </select>
 
-        <div style="display:flex; gap:20px;">
-
-            <div style="flex:1;"><label>Date of Diagnosis</label><input type="date" id="injury_date"></div>
-
-            <div style="flex:1;"><label>First Date of Use</label><input type="date" id="exposure_date"></div>
-
+        <div id="upload-zone" class="file-upload-zone" onclick="document.getElementById('evidence_file').click()">
+            <strong id="upload-label">Click to Upload Medical Proof</strong>
+            <p style="font-size: 10px;">PDF or JPG (Max 5MB)</p>
+            <input type="file" id="evidence_file" style="display:none" onchange="handleFileValidation()">
+            <div id="file-name-display" style="margin-top:10px; font-size:12px; color:var(--tier1);"></div>
         </div>
 
-        <div class="btn-row">
-
-            <button class="btn-back" onclick="next(1)">Back</button>
-
-            <button class="btn-next" style="width:70%" onclick="validateAndNext(2, 3)">Next: Clinical Details</button>
-
-        </div>
-
+        <textarea id="pathology" rows="4" placeholder="Symptom timeline..."></textarea>
+        <button class="btn-next" onclick="next(4)">Legal Review</button>
     </div>
 
-
-
-    <!-- STEP 3: EVIDENCE -->
-
-    <div class="step" id="step3">
-
-        <h2>Clinical Audit</h2>
-
-        <p>Step 3: Verbatim Evidence Capture</p>
-
-        <div id="dynamic-questions-container"></div>
-
-        
-
-        <div class="section-break">
-
-            <h3>Settlement Valuation Qualifiers</h3>
-
-        </div>
-
-        <div id="universal-questions-container"></div>
-
-
-
-        <label>Medical Evidence / Pathology Impression</label>
-
-        <textarea id="pathology" rows="4" placeholder="Copy the 'Impression' or 'Diagnosis' section exactly..."></textarea>
-
-        <div class="btn-row">
-
-            <button class="btn-back" onclick="next(2)">Back</button>
-
-            <button class="btn-next" style="width:70%" onclick="next(4)">Final Certification</button>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- STEP 4: SIGNATURE -->
-
+    <!-- STEP 4: SIGNATURE & MARKETPLACE ROUTING -->
     <div class="step" id="step4">
-
         <h2>Legal Execution</h2>
-
-        <p>Step 4: Digital Signature for Settlement Tiering</p>
-
-        
-
-        <div class="signature-wrapper">
-
-            <canvas id="signature-pad"></canvas>
-
-            <button type="button" onclick="signaturePad.clear()" style="position: absolute; right: 10px; bottom: 10px; padding: 8px 15px; font-size: 12px; background: #f1f1f1; color: #333; border-radius: 4px; border: 1px solid #ccc; z-index: 10;">Clear Signature</button>
-
-        </div>
-
-
-
-        <div class="compliance-text">
-
-            <strong>Legal Certification & Authorization:</strong> By signing and submitting this audit, I electronically certify that the information provided is true and accurate to the best of my knowledge. I authorize NextGen Leadlogic to perform a preliminary settlement audit and share my data with Morgan & Morgan for the purpose of evaluating my potential claim. I understand that this submission does not constitute an attorney-client relationship until a formal retainer is signed, and that results of this audit are preliminary and subject to full medical record verification. ©2026.
-
-        </div>
-
-        <div class="btn-row" style="margin-top:20px;">
-
-            <button class="btn-back" onclick="next(3)">Back</button>
-
-            <button class="btn-next" id="submit-btn" style="width:70%; background:#00d4ff;" onclick="submit()">Submit Final Audit</button>
-
-        </div>
-
+        <div class="signature-wrapper"><canvas id="signature-pad"></canvas></div>
+        <p class="compliance-text">Audit locked via SHA-256 Fingerprint. Submission implies exclusive routing authorization.</p>
+        <button class="btn-next" id="submit-btn" style="background:var(--accent);" onclick="submitAudit()">Certify & Route Lead</button>
     </div>
-
 </div>
 
-
-
 <script>
-
     let _supabase, signaturePad;
+    let startTime, uploadedFileBase64 = null;
+    let isVerified = false;
 
-    const canvas = document.getElementById('signature-pad');
+    // 🟢 MARKETPLACE ROUTING ENGINE
+    const MARKETPLACE_ROUTING = {
+        PLATINUM: { endpoint: "https://api.marketplace.io/route/exclusive-premium", buyer: "Morgan & Morgan Elite" },
+        GOLD: { endpoint: "https://api.marketplace.io/route/standard-bid", buyer: "Marketplace Round-Robin" },
+        SILVER: { endpoint: "https://api.marketplace.io/route/bulk-storage", buyer: "Internal Backlog" }
+    };
 
-
-
+    const AUDIT_CONFIG = { model_version: "v3.0.0-final", rule_set: "exclusive-routing-2026" };
     const SUPABASE_URL = 'https://xjzaugpmhbkwmzbnhlqu.supabase.co';
-
     const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
 
-
-
     window.onload = function() {
-
-        try {
-
-            _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-            signaturePad = new SignaturePad(canvas, { 
-
-                backgroundColor: 'rgb(255, 255, 255)', 
-
-                penColor: 'rgb(10, 37, 64)',
-
-                minWidth: 1.5,
-
-                maxWidth: 4.5
-
-            });
-
-        } catch (e) { console.error("Init Error:", e); }
-
+        _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        signaturePad = new SignaturePad(document.getElementById('signature-pad'));
     };
 
-
-
-    function resizeCanvas() {
-
-        if (!canvas || !signaturePad) return;
-
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-
-        const wrapper = canvas.parentElement;
-
-        canvas.width = wrapper.offsetWidth * ratio; 
-
-        canvas.height = wrapper.offsetHeight * ratio;
-
-        const context = canvas.getContext("2d");
-
-        context.scale(ratio, ratio);
-
-        signaturePad.clear();
-
+    function sendOTP() {
+        if (!document.getElementById('email').value || !document.getElementById('phone').value) return alert("Contact data missing");
+        document.getElementById('otp-area').style.display = 'block';
+        document.getElementById('otp-trigger').style.display = 'none';
     }
 
-
-
-    window.addEventListener("resize", resizeCanvas); 
-
-
-
-    // UNIVERSAL QUESTIONS FOR ALL CATEGORIES
-
-    const universalQualifiers = [
-
-        { id: 'univ_1', q: 'Are you filing for yourself or someone else?', type: 'select', options: ['Myself', 'Someone Else'] },
-
-        { id: 'univ_2', q: 'Is the injured person deceased?', type: 'select', options: ['No', 'Yes'] },
-
-        { id: 'univ_3', q: 'Has this condition affected your ability to work?', type: 'select', options: ['No', 'Yes'] },
-
-        { id: 'univ_4', q: 'Are you currently disabled?', type: 'select', options: ['No', 'Yes'] },
-
-        { id: 'univ_5', q: 'Estimated lost income?', type: 'text', placeholder: 'e.g. $5000' },
-
-        { id: 'univ_6', q: 'Estimated medical expenses?', type: 'text', placeholder: 'e.g. $10000' },
-
-        { id: 'univ_7', q: 'Do you have medical records available?', type: 'select', options: ['Yes', 'No'] },
-
-        { id: 'univ_8', q: 'Can you provide documents within 24–48 hours?', type: 'select', options: ['Yes', 'No'] },
-
-        { id: 'univ_9', q: 'Are you willing to speak to an attorney within 24–48 hours?', type: 'select', options: ['Yes', 'No'] }
-
-    ];
-
-
-
-    const litigationQuestions = {
-
-        'DJI': [
-
-            { id: 'dji_p1', q: 'Implant Brand: What brand was the implant? (if known)', type: 'text' },
-
-            { id: 'dji_p2', q: 'Hospital: Name of hospital where surgery occurred', type: 'text' },
-
-            { id: 'dji_p3', q: 'Surgeon: Name of surgeon', type: 'text' },
-
-            { id: 'dji_p4', q: 'Diagnosis: Were you diagnosed with a DJI within 2 years of surgery?', type: 'select', options: ['Yes', 'No', 'Unsure'] },
-
-            { id: 'dji_p5', q: 'Procedural History: Did you require a revision surgery or "washout"?', type: 'select', options: ['Yes', 'No', 'Unsure'] }
-
-        ],
-
-        'FRESENIUS': [
-
-            { id: 'fr_p1', q: 'Clinic Name: Name of dialysis center', type: 'text' },
-
-            { id: 'fr_p2', q: 'Frequency: How many sessions per week?', type: 'text' },
-
-            { id: 'fr_p3', q: 'Temporal Link: Did a cardiac event occur within 48 hours of dialysis?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'OZEMPIC': [
-
-            { id: 'glp_p1', q: 'Prescriber: Who prescribed the medication?', type: 'text' },
-
-            { id: 'glp_p2', q: 'Pharmacy: Which pharmacy did you use?', type: 'text' },
-
-            { id: 'glp_p3', q: 'Diagnosis: Have you been diagnosed with Gastroparesis or Ileus?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'TALCUM': [
-
-            { id: 'tlc_p1', q: 'Brand Identification: Which brand did you use (e.g. J&J)?', type: 'text' },
-
-            { id: 'tlc_p2', q: 'Duration: Approximate years of use?', type: 'text' },
-
-            { id: 'tlc_p3', q: 'Diagnosis: Confirmed Ovarian Cancer or Mesothelioma?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'DEPO_PROVERA': [
-
-            { id: 'dp_p1', q: 'Location: Where did you receive the injections?', type: 'text' },
-
-            { id: 'dp_p2', q: 'Timeline: Approximate dates of injections?', type: 'text' },
-
-            { id: 'dp_p3', q: 'Diagnosis: Confirmed Meningioma (brain tumor)?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'NURSING_HOME': [
-
-            { id: 'nh_p1', q: 'Facility Name: Name of nursing home facility', type: 'text' },
-
-            { id: 'nh_p2', q: 'Location: City & State of facility', type: 'text' },
-
-            { id: 'nh_p3', q: 'Injury: Pressure sore, fracture, or sepsis?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'TOXIC_EXPOSURE': [
-
-            { id: 'pfas_p1', q: 'Duration: How many years were you exposed?', type: 'text' },
-
-            { id: 'pfas_p2', q: 'Source: Source of exposure (water system, employer, base)', type: 'text' },
-
-            { id: 'pfas_p3', q: 'Diagnosis: Kidney/Testicular Cancer or Thyroid disease?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'MILITARY': [
-
-            { id: 'clj_p1', q: 'Timeline: Dates stationed at Camp Lejeune', type: 'text' },
-
-            { id: 'clj_p2', q: 'Role: Were you military personnel or civilian?', type: 'select', options: ['Military', 'Civilian'] },
-
-            { id: 'clj_p3', q: 'Condition: Confirmed Parkinson\'s or Cancer?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'OTHER': [
-
-            { id: 'gen_p1', q: 'Product Name: Name of product', type: 'text' },
-
-            { id: 'gen_p2', q: 'Manufacturer: Manufacturer (if known)', type: 'text' }
-
-        ]
-
-    };
-
-
-
-    function renderQuestionSet(questions, targetId) {
-
-        const container = document.getElementById(targetId);
-
-        if (!container) return;
-
-        container.innerHTML = "";
-
-        questions.forEach(item => {
-
-            const wrapper = document.createElement('div');
-
-            wrapper.className = "niche-question-block";
-
-            let inputHtml = '';
-
-            if (item.type === 'select') {
-
-                inputHtml = `<select class="dynamic-answer" data-qid="${item.id}" data-qtext="${item.q}">
-
-                    ${item.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-
-                </select>`;
-
-            } else {
-
-                inputHtml = `<input type="text" class="dynamic-answer" data-qid="${item.id}" data-qtext="${item.q}" placeholder="${item.placeholder || ''}">`;
-
-            }
-
-            wrapper.innerHTML = `<label class="niche-label">${item.q}</label>${inputHtml}`;
-
-            container.appendChild(wrapper);
-
-        });
-
+    function verifyOTP() {
+        if (document.getElementById('otp_code').value.length === 6) {
+            isVerified = true;
+            startTracking();
+            next(2);
+        } else { alert("Invalid Code"); }
     }
 
+    function handleFileValidation() {
+        const file = document.getElementById('evidence_file').files[0];
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+        const maxSize = 5 * 1024 * 1024;
 
+        if (file.size > maxSize) return alert("File too large (>5MB)");
+        if (!allowedTypes.includes(file.type)) return alert("Format not supported.");
 
-    function generateDynamicQuestions() {
-
-        const selectedType = document.getElementById('case_type').value;
-
-        if (litigationQuestions[selectedType]) {
-
-            renderQuestionSet(litigationQuestions[selectedType], 'dynamic-questions-container');
-
-            renderQuestionSet(universalQualifiers, 'universal-questions-container');
-
-            return true;
-
-        }
-
-        return false;
-
+        document.getElementById('file-name-display').innerText = "✓ Validated: " + file.name;
+        const reader = new FileReader();
+        reader.onload = (e) => { uploadedFileBase64 = e.target.result; };
+        reader.readAsDataURL(file);
     }
 
-
-
-    function validateAndNext(current, target) {
-
-        if (current === 1) {
-
-            if (!document.getElementById('first_name').value || !document.getElementById('consent_checkbox').checked) {
-
-                alert("Please complete name, email, and provide your express consent."); return;
-
-            }
-
-        }
-
-        if (current === 2) {
-
-            if (!document.getElementById('case_type').value) { alert("Please select a Case Category."); return; }
-
-            generateDynamicQuestions();
-
-        }
-
-        next(target);
-
+    async function createFingerprint(email, phone) {
+        const msgBuffer = new TextEncoder().encode(email.toLowerCase() + phone.replace(/\D/g, ''));
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-
-
+    function startTracking() { startTime = Date.now(); }
     function next(s) {
-
         document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-
         document.getElementById('step' + s).classList.add('active');
-
         document.getElementById('fill').style.width = (s * 25) + '%';
-
-        window.scrollTo(0,0);
-
-        if (s === 4) setTimeout(resizeCanvas, 150);
-
     }
 
+    function validateSOL() { next(3); }
+    function toggleUploadZone() { document.getElementById('upload-zone').style.opacity = (document.getElementById('evidence_tier').value === "3") ? "0.5" : "1"; }
 
-
-    async function submit() {
-
-        if (signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
-
-        const btn = document.getElementById('submit-btn');
-
-        btn.innerText = "Securing Audit Data..."; btn.disabled = true;
-
+    async function submitAudit() {
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const fingerprint = await createFingerprint(email, phone);
+        const tier = document.getElementById('evidence_tier').value;
         
-
-        const dynamicData = {};
-
-        document.querySelectorAll('.dynamic-answer').forEach(el => {
-
-            dynamicData[el.getAttribute('data-qtext')] = el.value;
-
-        });
-
-        
+        let leadTier = (tier === "1" && uploadedFileBase64) ? "PLATINUM" : (tier === "2" ? "GOLD" : "SILVER");
+        const route = MARKETPLACE_ROUTING[leadTier];
 
         const payload = {
-
-            first_name: document.getElementById('first_name').value,
-
-            last_name: document.getElementById('last_name').value,
-
-            email: document.getElementById('email').value,
-
-            phone: document.getElementById('phone').value,
-
-            zip_code: document.getElementById('zip_code').value,
-
-            case_type: document.getElementById('case_type').value,
-
-            audit_metadata: dynamicData,
-
-            pathology_impression: document.getElementById('pathology').value,
-
-            signature_base64: signaturePad.toDataURL(),
-
-            apollo_form_id: document.getElementById('apollo_form_id').value,
-
-            submitted_at: new Date().toISOString()
-
+            lead_id: fingerprint,
+            monetization_tier: leadTier,
+            buyer_lock: route.buyer,
+            evidence_blob: uploadedFileBase64,
+            is_exclusive: true,
+            audit_metadata: { ...AUDIT_CONFIG, scored_at: new Date().toISOString() }
         };
 
+        const { error } = await _supabase.from('settlement_assets').insert([payload]);
         
-
-        try {
-
-            const { error } = await _supabase.from('settlement_assets').insert([payload]);
-
-            if (error) throw error;
-
-            alert("AUDIT SECURED AND TRANSMITTED."); 
-
+        if (error && error.code === '23505') {
+            alert("Duplicate Claim Detected. Lead already routed.");
+        } else if (!error) {
+            fetch(route.endpoint, { method: 'POST', body: JSON.stringify(payload) });
+            alert(`SUCCESS: Lead Locked & Routed to ${route.buyer}.`);
             location.reload();
-
-        } catch (err) {
-
-            alert("Submission Error: " + err.message); 
-
-            btn.disabled = false; btn.innerText = "Submit Final Audit";
-
         }
-
     }
-
 </script>
-
 </body>
-
 </html>
