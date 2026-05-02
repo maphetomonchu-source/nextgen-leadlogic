@@ -1,131 +1,92 @@
-/* 
-  ELITE LEAD VALUATION SYSTEM v1.0 
-  Full-Stack Engineering Patch
-*/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextGen Leadlogic | Universal Settlement Audit</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <style>
+        :root { --primary: #0a2540; --accent: #00d4ff; --text: #424770; }
+        body { font-family: 'Inter', sans-serif; background: #f6f9fc; display: flex; justify-content: center; padding: 40px 20px; color: var(--text); }
+        #audit-container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 50px 100px -20px rgba(50,50,93,0.25); max-width: 650px; width: 100%; border-top: 10px solid var(--primary); }
+        .step { display: none; }
+        .step.active { display: block; }
+        .progress-bar { height: 6px; background: #e6ebf1; margin-bottom: 30px; border-radius: 3px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 25%; transition: 0.4s; }
+        h2 { color: var(--primary); font-size: 22px; margin-bottom: 5px; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #8898aa; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e6ebf1; border-radius: 4px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
+        input:focus, select:focus { border-color: var(--accent); outline: none; }
+        .btn-row { display: flex; justify-content: space-between; margin-top: 20px; }
+        button { padding: 15px 30px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-next { background: var(--primary); color: white; width: 100%; }
+        .btn-next:hover { background: #153e63; }
+        .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
 
-// --- 1. FIELD NORMALIZATION LAYER ---
-const normalizeAnswer = (val) => {
-    if (!val) return "";
-    const v = val.trim().toLowerCase();
-    if (["yes", "myself", "prescribed", "total"].includes(v)) return "high_intent";
-    if (["no", "unsure", "none"].includes(v)) return "low_intent";
-    return v;
-};
-
-const safeGet = (obj, qid, defaultValue = "") => {
-    return obj[qid] ? obj[qid].value : defaultValue;
-};
-
-// --- 2. SCORING ENGINE (PURE FUNCTIONS) ---
-const calculateScore = (dynamicData) => {
-    let score = 40; // Base score for reaching final step
-
-    // Scoring Rules based on data-qid
-    const rules = [
-        { id: 'univ_diagn', val: 'yes', points: 15 },    // Specialist confirmed
-        { id: 'univ_disab', val: 'total', points: 15 },  // Total disability
-        { id: 'univ_disab', val: 'partial', points: 5 }, // Partial disability
-        { id: 'univ_7', val: 'yes', points: 10 },        // Records available
-        { id: 'univ_9', val: 'yes', points: 10 },        // Call immediately
-        { id: 'univ_unknown', val: 'yes', points: 10 }   // Answers unknown calls
-    ];
-
-    rules.forEach(rule => {
-        if (dynamicData[rule.id] && dynamicData[rule.id].value.toLowerCase() === rule.val) {
-            score += rule.points;
+        .signature-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border: 2px solid #0a2540;
+            border-radius: 8px;
+            background: #ffffff;
+            touch-action: none;
+            margin-bottom: 10px;
         }
-    });
+        #signature-pad {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
 
-    return Math.min(score, 100);
-};
+        .compliance-text { font-size: 11px; color: #6b7c93; line-height: 1.6; margin-top: 15px; text-align: justify; }
+        .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
+        .checkbox-row input { width: auto; margin: 0; margin-top: 3px; }
+        .niche-question-block { background: #f8fafd; border: 1px solid #e6ebf1; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .niche-label { text-transform: none; color: var(--primary); font-size: 14px; margin-bottom: 8px; font-weight: 600; }
+        .dynamic-answer { margin-bottom: 0; }
+        .section-break { border-top: 2px dashed #e6ebf1; margin: 30px 0; padding-top: 10px; }
+    </style>
+</head>
+<body>
 
-// --- 3. TIER ENGINE ---
-const isPlatinumEligible = (dynamicData) => {
-    // Hard Lock: Platinum must have an attorney (No) and Diagnosis (Yes)
-    const hasAtty = safeGet(dynamicData, 'univ_atty').toLowerCase();
-    const isDiagnosed = safeGet(dynamicData, 'univ_diagn').toLowerCase();
-    
-    return hasAtty === "no" && isDiagnosed === "yes";
-};
+<div id="audit-container">
+    <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
+    <input type="hidden" id="case_type_select" value="MALPRACTICE">
+    <input type="hidden" id="redirect_url" value="thank-you.html">
+    <input type="hidden" id="form_id" value="intake_v2_2026">
+    <input type="hidden" id="handling_firm" value="LEADLOGIC_MASTER">
+    <input type="hidden" id="marketing_source" value="organic_search">
+    <input type="hidden" id="marketing_sub_source" value="bot_exfiltrated_logic">
+    <input type="hidden" id="additional_marketing_source_information" value="njabulo_logic_v2">
 
-const getTier = (score, dynamicData) => {
-    if (score >= 85 && isPlatinumEligible(dynamicData)) return "PLATINUM";
-    if (score >= 70) return "GOLD";
-    return "SILVER";
-};
+    <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
 
-// --- 4. BUYER PACKAGING ENGINE ---
-const buildBuyerIntel = (payload, dynamicData, score, tier) => {
-    return {
-        lead_tier: tier,
-        valuation_score: score,
-        causation_confidence: safeGet(dynamicData, 'univ_diagn') === "Yes" ? "HIGH" : "MED",
-        evidence_depth: safeGet(dynamicData, 'univ_7') === "Yes" ? "TIER_1" : "TIER_3",
-        risk_profile: safeGet(dynamicData, 'univ_atty') === "Yes" ? "REJECT" : "CLEAN",
-        freshness: "REAL_TIME"
-    };
-};
-
-// --- 5. CASE SUMMARY GENERATOR ---
-const buildCaseSummary = (payload, tier, dynamicData) => {
-    const caseType = payload.case_type || "GENERAL";
-    const diagnosis = safeGet(dynamicData, 'univ_diagn') === "Yes" ? "DIAGNOSED" : "PENDING";
-    const evidence = safeGet(dynamicData, 'univ_7') === "Yes" ? "DOCS_READY" : "NO_DOCS";
-    const callReady = safeGet(dynamicData, 'univ_9') === "Yes" ? "HOT" : "WARM";
-
-    return `${tier} | ${caseType} | ${diagnosis} | ${evidence} | ${callReady}`;
-};
-
-// --- 6. SUBMIT FUNCTION INTEGRATION (SAFE PATCH) ---
-// This version wraps the existing submission logic with the valuation engine
-async function submit() {
-    if (signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
-    const btn = document.getElementById('submit-btn');
-    btn.innerText = "Encrypting Elite Audit..."; btn.disabled = true;
-    
-    // Capture Dynamic Data using data-qid as Primary Key
-    const dynamicData = {};
-    document.querySelectorAll('.dynamic-answer').forEach(el => {
-        const qid = el.getAttribute('data-qid');
-        dynamicData[qid] = {
-            text: el.getAttribute('data-qtext'),
-            value: el.value
-        };
-    });
-    
-    // Construct Original Payload
-    const payload = {
-        first_name: document.getElementById('first_name').value,
-        last_name: document.getElementById('last_name').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        zip_code: document.getElementById('zip_code').value,
-        case_type: document.getElementById('case_type').value,
-        audit_metadata: dynamicData,
-        pathology_impression: document.getElementById('pathology').value,
-        signature_base64: signaturePad.toDataURL(),
-        apollo_form_id: document.getElementById('apollo_form_id').value,
-        submitted_at: new Date().toISOString()
-    };
-
-    // --- ELITE SYSTEM INJECTION ---
-    const score = calculateScore(dynamicData);
-    const tier = getTier(score, dynamicData);
-    
-    payload.lead_score = score;
-    payload.lead_tier = tier;
-    payload.case_summary = buildCaseSummary(payload, tier, dynamicData);
-    payload.buyer_intel = buildBuyerIntel(payload, dynamicData, score, tier);
-    payload.schema_version = "v1.0";
-    // --- END INJECTION ---
-    
-    try {
-        const { error } = await _supabase.from('settlement_assets').insert([payload]);
-        if (error) throw error;
-        alert(`AUDIT SECURED: [${tier} TIER] TRANSMITTED.`); 
-        location.reload();
-    } catch (err) {
-        alert("Submission Error: " + err.message); 
-        btn.disabled = false; btn.innerText = "Submit Final Audit";
-    }
-}
+    <!-- STEP 1: IDENTITY -->
+    <div class="step active" id="step1">
+        <h2>Claimant Verification</h2>
+        <p>Step 1: Legal Identity & Federal Lien Audit</p>
+        <label>Full Legal Name</label>
+        <div style="display:flex; gap:10px; margin-bottom: 20px;">
+            <input type="text" id="first_name" placeholder="First Name" required>
+            <input type="text" id="last_name" placeholder="Last Name" required>
+        </div>
+        <label>E-mail Address</label>
+        <input type="email" id="email" placeholder="email@example.com" required>
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="(555) 000-0000" required>
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1;"><label>Zip Code</label><input type="text" id="zip_code" maxlength="5"></div>
+            <div style="flex:1;"><label>Last 4 of SSN</label><input type="password" id="ssn" maxlength="4" placeholder="****"></div>
+        </div>
+        <label>Date of Birth</label>
+        <input type="date" id="dob">
+        <label>Incident Description (Audit Notes)</label>
+        <textarea id="incident_description" rows="3" placeholder="Please describe what happened..."></textarea>
+        <div class="checkbox-row">
+            <input type="checkbox" id="consent_checkbox">
