@@ -112,27 +112,43 @@
 
 
 
-<div id="audit-container">
+<<div id="audit-container">
+        <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
+        <input type="hidden" id="case_type_select" value="MALPRACTICE">
+        <input type="hidden" id="redirect_url" value="thank-you.html">
+        <input type="hidden" id="form_id" value="intake_v2_2026">
+        <input type="hidden" id="handling_firm" value="LEADLOGIC_MASTER">
+        <input type="hidden" id="marketing_source" value="organic_search">
+        <input type="hidden" id="marketing_sub_source" value="bot_exfiltrated_logic">
+        <input type="hidden" id="additional_marketing_source_information" value="njabulo_logic_v2">
 
-    <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
+        <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
 
-    <input type="hidden" id="case_type_select" value="MALPRACTICE">
+        <!-- STEP 0: WELCOME / LURE -->
+        <div class="step active" id="step0">
+            <h2>📄 Important Notice: Clinical & Legal Eligibility Review</h2>
+            <p>Many individuals who have experienced serious medical complications or long-term health effects are often unaware that their situation may qualify for further legal or medical review.</p>
+            
+            <div class="notice-box">
+                <p>This short assessment has been designed to help identify whether your case contains key clinical and timing indicators that are commonly required in settlement evaluations.</p>
+                <p><strong>The information collected is used to evaluate:</strong></p>
+                <ul>
+                    <li>Medical consistency between symptoms and diagnosis timeline</li>
+                    <li>Potential exposure or treatment-related risk factors</li>
+                    <li>Availability of supporting medical documentation</li>
+                    <li>Basic eligibility within legal time limits</li>
+                </ul>
+            </div>
+            
+            <span class="warning-text">⚠️ Not all cases qualify for further review. This screening helps ensure only viable matters are assessed.</span>
+            
+            <div style="margin-top: 30px;">
+                <h3>🧠 Why this matters...</h3>
+                <p style="font-size: 14px; line-height: 1.5;">Securing a high-value settlement requires immediate documentation. By completing this audit, you provide the evidence needed to determine eligibility for current litigation funds.</p>
+            </div>
 
-    <input type="hidden" id="redirect_url" value="thank-you.html">
-
-    <input type="hidden" id="form_id" value="intake_v2_2026">
-
-    <input type="hidden" id="handling_firm" value="LEADLOGIC_MASTER">
-
-    <input type="hidden" id="marketing_source" value="organic_search">
-
-    <input type="hidden" id="marketing_sub_source" value="bot_exfiltrated_logic">
-
-    <input type="hidden" id="additional_marketing_source_information" value="njabulo_logic_v2">
-
-
-
-    <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+            <button class="btn-next" style="margin-top:20px; background: #00d4ff;" onclick="next(1)">Start Eligibility Audit</button>
+        </div>
 
 
 
