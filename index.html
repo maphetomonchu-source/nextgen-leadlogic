@@ -3,90 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settlement Audit Form</title>
-    
-    <!-- 1. External dependencies required for your script to run -->
+    <title>NextGen Leadlogic | Universal Settlement Audit</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-
     <style>
-        .step { font-family: sans-serif; padding: 20px; display: none; }
-        .step.active { display: block !important; }
-        .niche-question-block { margin-bottom: 15px; }
-        .niche-label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, select, textarea { width: 100%; max-width: 400px; padding: 8px; margin-bottom: 10px; display: block; }
-        #signature-pad { width: 100%; height: 100%; cursor: crosshair; }
-        #progress-container { width: 100%; background: #e0e0e0; margin-bottom: 20px; }
-        #fill { width: 25%; height: 10px; background: #0a2540; transition: 0.3s; }
-        .signature-wrapper { border: 1px solid #ccc; width: 400px; height: 200px; background: white; }
+        :root { --primary: #0a2540; --accent: #00d4ff; --text: #424770; }
+        body { font-family: 'Inter', sans-serif; background: #f6f9fc; display: flex; justify-content: center; padding: 40px 20px; color: var(--text); }
+        #audit-container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 50px 100px -20px rgba(50,50,93,0.25); max-width: 650px; width: 100%; border-top: 10px solid var(--primary); }
+        .step { display: none; }
+        .step.active { display: block; }
+        .progress-bar { height: 6px; background: #e6ebf1; margin-bottom: 30px; border-radius: 3px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--accent); width: 25%; transition: 0.4s; }
+        h2 { color: var(--primary); font-size: 22px; margin-bottom: 5px; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #8898aa; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e6ebf1; border-radius: 4px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
+        input:focus, select:focus { border-color: var(--accent); outline: none; }
+        .btn-row { display: flex; justify-content: space-between; margin-top: 20px; }
+        button { padding: 15px 30px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-next { background: var(--primary); color: white; width: 100%; }
+        .btn-next:hover { background: #153e63; }
+        .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
+
+        .signature-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border: 2px solid #0a2540;
+            border-radius: 8px;
+            background: #ffffff;
+            touch-action: none;
+            margin-bottom: 10px;
+        }
+        #signature-pad {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .compliance-text { font-size: 11px; color: #6b7c93; line-height: 1.6; margin-top: 15px; text-align: justify; }
+        .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
+        .checkbox-row input { width: auto; margin: 0; margin-top: 3px; }
+        .niche-question-block { background: #f8fafd; border: 1px solid #e6ebf1; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .niche-label { text-transform: none; color: var(--primary); font-size: 14px; margin-bottom: 8px; font-weight: 600; }
+        .dynamic-answer { margin-bottom: 0; }
+        .section-break { border-top: 2px dashed #e6ebf1; margin: 30px 0; padding-top: 10px; }
     </style>
 </head>
 <body>
 
-<!-- 2. The Progress Bar -->
-<div id="progress-container">
-    <div id="fill"></div>
-</div>
+<div id="audit-container">
+    <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
+    <input type="hidden" id="case_type_select" value="MALPRACTICE">
+    <input type="hidden" id="redirect_url" value="thank-you.html">
+    <input type="hidden" id="form_id" value="intake_v2_2026">
+    <input type="hidden" id="handling_firm" value="LEADLOGIC_MASTER">
+    <input type="hidden" id="marketing_source" value="organic_search">
+    <input type="hidden" id="marketing_sub_source" value="bot_exfiltrated_logic">
+    <input type="hidden" id="additional_marketing_source_information" value="njabulo_logic_v2">
 
-<!-- STEP 1: Basic Info -->
-<div id="step1" class="step active">
-    <h2>Step 1: Contact Information</h2>
-    <input type="text" id="first_name" placeholder="First Name">
-    <input type="text" id="last_name" placeholder="Last Name">
-    <input type="email" id="email" placeholder="Email Address">
-    <input type="text" id="phone" placeholder="Phone Number">
-    <input type="text" id="zip_code" placeholder="Zip Code">
-    <br>
-    <label style="display: flex; align-items: center; gap: 10px;">
-        <input type="checkbox" id="consent_checkbox" style="width: auto;"> I agree to be contacted regarding this audit.
-    </label>
-    <br>
-    <button onclick="validateAndNext(1, 2)">Next Step</button>
-</div>
+    <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
 
-<!-- STEP 2: Case Selection -->
-<div id="step2" class="step">
-    <h2>Step 2: Case Category</h2>
-    <select id="case_type">
-        <option value="">-- Select Case Type --</option>
-        <option value="DJI">DJI (Implant)</option>
-        <option value="FRESENIUS">Fresenius</option>
-        <option value="OZEMPIC">Ozempic</option>
-        <option value="TALCUM">Talcum Powder</option>
-        <option value="DEPO_PROVERA">Depo-Provera</option>
-        <option value="NURSING_HOME">Nursing Home</option>
-        <option value="TOXIC_EXPOSURE">Toxic Exposure</option>
-        <option value="MILITARY">Military / Camp Lejeune</option>
-        <option value="OTHER">Other</option>
-    </select>
-    <br>
-    <button onclick="validateAndNext(2, 3)">Generate Audit Questions</button>
-</div>
-
-<!-- STEP 3: Dynamic Questions -->
-<div id="step3" class="step">
-    <h2>Step 3: Audit Details</h2>
-    <div id="universal-questions-container"></div>
-    <hr>
-    <div id="dynamic-questions-container"></div>
-    <br>
-    <textarea id="pathology" placeholder="Additional details or medical impressions..."></textarea>
-    <br>
-    <button onclick="next(4)">Continue to Signature</button>
-</div>
-
-<!-- STEP 4: Signature -->
-<div id="step4" class="step">
-    <h2>Step 4: Digital Authorization</h2>
-    <div class="signature-wrapper">
-        <canvas id="signature-pad"></canvas>
+    <!-- STEP 1: IDENTITY -->
+    <div class="step active" id="step1">
+        <h2>Claimant Verification</h2>
+        <p>Step 1: Legal Identity & Federal Lien Audit</p>
+        <label>Full Legal Name</label>
+        <div style="display:flex; gap:10px; margin-bottom: 20px;">
+            <input type="text" id="first_name" placeholder="First Name" required>
+            <input type="text" id="last_name" placeholder="Last Name" required>
+        </div>
+        <label>E-mail Address</label>
+        <input type="email" id="email" placeholder="email@example.com" required>
+        <label>Phone Number</label>
+        <input type="tel" id="phone" placeholder="(555) 000-0000" required>
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1;"><label>Zip Code</label><input type="text" id="zip_code" maxlength="5"></div>
+            <div style="flex:1;"><label>Last 4 of SSN</label><input type="password" id="ssn" maxlength="4" placeholder="****"></div>
+        </div>
+        <label>Date of Birth</label>
+        <input type="date" id="dob">
+        <label>Incident Description (Audit Notes)</label>
+        <textarea id="incident_description" rows="3" placeholder="Please describe what happened..."></textarea>
+        <div class="checkbox-row">
+            <input type="checkbox" id="consent_checkbox">
+            <div class="compliance-text">
+                <strong>Express Consent:</strong> I hereby provide my express written consent to be contacted by NextGen Leadlogic and its legal partners, including Morgan & Morgan, regarding my legal inquiry. I agree to receive communications via live agent, artificial or prerecorded voice messages, and automated SMS/MMS text messages even if I am on a Do Not Call registry. Msg & data rates may apply. Text STOP to opt-out.
+            </div>
+        </div>
+        <button class="btn-next" onclick="validateAndNext(1, 2)">Continue to Case Selection</button>
     </div>
-    <input type="hidden" id="apollo_form_id" value="SETTLEMENT_AUDIT_001">
-    <br>
-    <button id="submit-btn" onclick="submit()">Submit Final Audit</button>
+
+    <!-- STEP 2: CATEGORY -->
+    <div class="step" id="step2">
+        <h2>Litigation Discovery</h2>
+        <p>Step 2: Select Your Primary Claim Area</p>
+        <label>Case Category</label>
+        <select id="case_type">
+            <option value="">-- Select Your Injury Group --</option>
+            <option value="DJI">Deep Joint Infection (DJI) - Hip/Knee/Hardware</option>
+            <option value="FRESENIUS">Fresenius/Dialysis (Cardiac Arrest/Heart Attack)</option>
+            <option value="OZEMPIC">GLP-1 Agonists (Ozempic/Wegovy/Mounjaro)</option>
+            <option value="TALCUM">Talcum Powder (Ovarian Cancer/Mesothelioma)</option>
+            <option value="DEPO_PROVERA">Depo-Provera (Brain Tumor/Meningioma)</option>
+            <option value="NURSING_HOME">Nursing Home Negligence</option>
+            <option value="TOXIC_EXPOSURE">Toxic Exposure (AFFF/PFAS)</option>
+            <option value="MILITARY">Military (Camp Lejeune)</option>
+            <option value="OTHER">General Defective Products (Other)</option>
+        </select>
+        <div style="display:flex; gap:20px;">
+            <div style="flex:1;"><label>Date of Diagnosis</label><input type="date" id="injury_date"></div>
+            <div style="flex:1;"><label>First Date of Use</label><input type="date" id="exposure_date"></div>
+        </div>
+        <div class="btn-row">
+            <button class="btn-back" onclick="next(1)">Back</button>
+            <button class="btn-next" style="width:70%" onclick="validateAndNext(2, 3)">Next: Clinical Details</button>
+        </div>
+    </div>
+
+    <!-- STEP 3: EVIDENCE -->
+    <div class="step" id="step3">
+        <h2>Clinical Audit</h2>
+        <p>Step 3: Verbatim Evidence Capture</p>
+        <div id="dynamic-questions-container"></div>
+        
+        <div class="section-break">
+            <h3>Settlement Valuation Qualifiers</h3>
+        </div>
+        <div id="universal-questions-container"></div>
+
+        <label>Medical Evidence / Pathology Impression</label>
+        <textarea id="pathology" rows="4" placeholder="Copy the 'Impression' or 'Diagnosis' section exactly..."></textarea>
+        <div class="btn-row">
+            <button class="btn-back" onclick="next(2)">Back</button>
+            <button class="btn-next" style="width:70%" onclick="next(4)">Final Certification</button>
+        </div>
+    </div>
+
+    <!-- STEP 4: SIGNATURE -->
+    <div class="step" id="step4">
+        <h2>Legal Execution</h2>
+        <p>Step 4: Digital Signature for Settlement Tiering</p>
+        
+        <div class="signature-wrapper">
+            <canvas id="signature-pad"></canvas>
+            <button type="button" onclick="signaturePad.clear()" style="position: absolute; right: 10px; bottom: 10px; padding: 8px 15px; font-size: 12px; background: #f1f1f1; color: #333; border-radius: 4px; border: 1px solid #ccc; z-index: 10;">Clear Signature</button>
+        </div>
+
+        <div class="compliance-text">
+            <strong>Legal Certification & Authorization:</strong> By signing and submitting this audit, I electronically certify that the information provided is true and accurate to the best of my knowledge. I authorize NextGen Leadlogic to perform a preliminary settlement audit and share my data with Morgan & Morgan for the purpose of evaluating my potential claim. I understand that this submission does not constitute an attorney-client relationship until a formal retainer is signed, and that results of this audit are preliminary and subject to full medical record verification. ©2026.
+        </div>
+        <div class="btn-row" style="margin-top:20px;">
+            <button class="btn-back" onclick="next(3)">Back</button>
+            <button class="btn-next" id="submit-btn" style="width:70%; background:#00d4ff;" onclick="submit()">Submit Final Audit</button>
+        </div>
+    </div>
 </div>
 
-<!-- Fully Updated Script: Integrated Severity, Liability, and Exposure Control -->
 <script>
     let _supabase, signaturePad;
     const canvas = document.getElementById('signature-pad');
@@ -103,6 +179,7 @@
                 minWidth: 1.5,
                 maxWidth: 4.5
             });
+            resizeCanvas();
         } catch (e) { console.error("Init Error:", e); }
     };
 
@@ -119,65 +196,60 @@
 
     window.addEventListener("resize", resizeCanvas); 
 
-    // UPDATED UNIVERSAL QUESTIONS: Integrated Severity Scoring and Liability
+    // UNIVERSAL QUESTIONS FOR ALL CATEGORIES
     const universalQualifiers = [
-        { id: 'univ_severity', q: 'Injury Severity Level?', type: 'select', options: ['Mild', 'Moderate', 'Severe', 'Life-threatening'] },
-        { id: 'univ_warned', q: 'Were you warned of side effects before use?', type: 'select', options: ['No', 'Yes', 'Unsure'] },
         { id: 'univ_1', q: 'Are you filing for yourself or someone else?', type: 'select', options: ['Myself', 'Someone Else'] },
         { id: 'univ_2', q: 'Is the injured person deceased?', type: 'select', options: ['No', 'Yes'] },
-        { id: 'univ_diagn', q: 'Was diagnosis confirmed by a specialist?', type: 'select', options: ['Yes', 'No', 'Unsure'] },
-        { id: 'univ_disab', q: 'Permanent disability rating?', type: 'select', options: ['NONE', 'Partial', 'Total'] },
         { id: 'univ_3', q: 'Has this condition affected your ability to work?', type: 'select', options: ['No', 'Yes'] },
-        { id: 'univ_future', q: 'Estimated future medical costs (lifetime care)?', type: 'text', placeholder: 'e.g. $50,000+' },
-        { id: 'univ_contact', q: 'Preferred contact time window?', type: 'select', options: ['Morning', 'Afternoon', 'Evening'] },
-        { id: 'univ_unknown', q: 'Do you answer calls from unknown numbers?', type: 'select', options: ['Yes', 'No'] },
+        { id: 'univ_4', q: 'Are you currently disabled?', type: 'select', options: ['No', 'Yes'] },
+        { id: 'univ_5', q: 'Estimated lost income?', type: 'text', placeholder: 'e.g. $5000' },
+        { id: 'univ_6', q: 'Estimated medical expenses?', type: 'text', placeholder: 'e.g. $10000' },
         { id: 'univ_7', q: 'Do you have medical records available?', type: 'select', options: ['Yes', 'No'] },
-        { id: 'univ_9', q: 'Can we call you immediately today?', type: 'select', options: ['Yes', 'No'] }
+        { id: 'univ_8', q: 'Can you provide documents within 24–48 hours?', type: 'select', options: ['Yes', 'No'] },
+        { id: 'univ_9', q: 'Are you willing to speak to an attorney within 24–48 hours?', type: 'select', options: ['Yes', 'No'] }
     ];
 
-    // UPDATED LITIGATION QUESTIONS: Integrated Exposure Control (Consistency & Usage)
     const litigationQuestions = {
         'DJI': [
             { id: 'dji_p1', q: 'Implant Brand: What brand was the implant? (if known)', type: 'text' },
+            { id: 'dji_p2', q: 'Hospital: Name of hospital where surgery occurred', type: 'text' },
+            { id: 'dji_p3', q: 'Surgeon: Name of surgeon', type: 'text' },
             { id: 'dji_p4', q: 'Diagnosis: Were you diagnosed with a DJI within 2 years of surgery?', type: 'select', options: ['Yes', 'No', 'Unsure'] },
-            { id: 'dji_p5', q: 'Procedural History: Did you require a revision surgery or "washout"?', type: 'select', options: ['Yes', 'No', 'Unsure'] },
-            { id: 'dji_warn', q: 'Did a doctor warn you of infection risks?', type: 'select', options: ['Yes', 'No'] }
+            { id: 'dji_p5', q: 'Procedural History: Did you require a revision surgery or "washout"?', type: 'select', options: ['Yes', 'No', 'Unsure'] }
         ],
         'FRESENIUS': [
             { id: 'fr_p1', q: 'Clinic Name: Name of dialysis center', type: 'text' },
-            { id: 'fr_p3', q: 'Temporal Link: Did a cardiac event occur within 48 hours of dialysis?', type: 'select', options: ['Yes', 'No'] },
-            { id: 'fr_recall', q: 'Were you aware of GranuFlo/NaturaLyte recalls?', type: 'select', options: ['Yes', 'No'] }
+            { id: 'fr_p2', q: 'Frequency: How many sessions per week?', type: 'text' },
+            { id: 'fr_p3', q: 'Temporal Link: Did a cardiac event occur within 48 hours of dialysis?', type: 'select', options: ['Yes', 'No'] }
         ],
         'OZEMPIC': [
-            { id: 'glp_usage', q: 'Usage Frequency?', type: 'select', options: ['Continuous Use', 'Intermittent Use'] },
-            { id: 'glp_dose', q: 'Dosage Consistency: Did you follow prescribed dosing?', type: 'select', options: ['Consistent', 'Inconsistent'] },
-            { id: 'glp_p1', q: 'Was the product prescribed by a doctor or self-used?', type: 'select', options: ['Prescribed', 'Self-Used'] },
-            { id: 'glp_p3', q: 'Diagnosis: Have you been diagnosed with Gastroparesis or Ileus?', type: 'select', options: ['Yes', 'No'] },
-            { id: 'glp_report', q: 'Did you report symptoms to a doctor early?', type: 'select', options: ['Yes', 'No'] }
+            { id: 'glp_p1', q: 'Prescriber: Who prescribed the medication?', type: 'text' },
+            { id: 'glp_p2', q: 'Pharmacy: Which pharmacy did you use?', type: 'text' },
+            { id: 'glp_p3', q: 'Diagnosis: Have you been diagnosed with Gastroparesis or Ileus?', type: 'select', options: ['Yes', 'No'] }
         ],
         'TALCUM': [
-            { id: 'tlc_usage', q: 'Usage Frequency?', type: 'select', options: ['Continuous Use', 'Intermittent Use'] },
             { id: 'tlc_p1', q: 'Brand Identification: Which brand did you use (e.g. J&J)?', type: 'text' },
-            { id: 'tlc_p3', q: 'Diagnosis: Confirmed Ovarian Cancer or Mesothelioma?', type: 'select', options: ['Yes', 'No'] },
-            { id: 'tlc_lawsuit', q: 'Have you participated in previous class actions for this?', type: 'select', options: ['No', 'Yes'] }
+            { id: 'tlc_p2', q: 'Duration: Approximate years of use?', type: 'text' },
+            { id: 'tlc_p3', q: 'Diagnosis: Confirmed Ovarian Cancer or Mesothelioma?', type: 'select', options: ['Yes', 'No'] }
         ],
         'DEPO_PROVERA': [
-            { id: 'dp_usage', q: 'Usage Frequency?', type: 'select', options: ['Continuous Use', 'Intermittent Use'] },
-            { id: 'dp_p3', q: 'Diagnosis: Confirmed Meningioma (brain tumor)?', type: 'select', options: ['Yes', 'No'] },
-            { id: 'dp_timeline', q: 'Time gap between first injection and symptoms?', type: 'text', placeholder: 'e.g. 5 years' }
+            { id: 'dp_p1', q: 'Location: Where did you receive the injections?', type: 'text' },
+            { id: 'dp_p2', q: 'Timeline: Approximate dates of injections?', type: 'text' },
+            { id: 'dp_p3', q: 'Diagnosis: Confirmed Meningioma (brain tumor)?', type: 'select', options: ['Yes', 'No'] }
         ],
         'NURSING_HOME': [
             { id: 'nh_p1', q: 'Facility Name: Name of nursing home facility', type: 'text' },
+            { id: 'nh_p2', q: 'Location: City & State of facility', type: 'text' },
             { id: 'nh_p3', q: 'Injury: Pressure sore, fracture, or sepsis?', type: 'select', options: ['Yes', 'No'] }
         ],
         'TOXIC_EXPOSURE': [
-            { id: 'pfas_usage', q: 'Exposure Pattern?', type: 'select', options: ['Continuous Use', 'Intermittent Use'] },
+            { id: 'pfas_p1', q: 'Duration: How many years were you exposed?', type: 'text' },
             { id: 'pfas_p2', q: 'Source: Source of exposure (water system, employer, base)', type: 'text' },
-            { id: 'pfas_p3', q: 'Diagnosis: Kidney/Testicular Cancer or Thyroid disease?', type: 'select', options: ['Yes', 'No'] },
-            { id: 'pfas_emp', q: 'Does employer have exposure records?', type: 'select', options: ['Yes', 'No', 'Unsure'] }
+            { id: 'pfas_p3', q: 'Diagnosis: Kidney/Testicular Cancer or Thyroid disease?', type: 'select', options: ['Yes', 'No'] }
         ],
         'MILITARY': [
             { id: 'clj_p1', q: 'Timeline: Dates stationed at Camp Lejeune', type: 'text' },
+            { id: 'clj_p2', q: 'Role: Were you military personnel or civilian?', type: 'select', options: ['Military', 'Civilian'] },
             { id: 'clj_p3', q: 'Condition: Confirmed Parkinson\'s or Cancer?', type: 'select', options: ['Yes', 'No'] }
         ],
         'OTHER': [
@@ -231,7 +303,8 @@
 
     function next(s) {
         document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-        document.getElementById('step' + s).classList.add('active');
+        const targetStep = document.getElementById('step' + s);
+        if (targetStep) targetStep.classList.add('active');
         document.getElementById('fill').style.width = (s * 25) + '%';
         window.scrollTo(0,0);
         if (s === 4) setTimeout(resizeCanvas, 150);
@@ -253,11 +326,21 @@
             email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
             zip_code: document.getElementById('zip_code').value,
+            ssn_last_4: document.getElementById('ssn').value,
+            dob: document.getElementById('dob').value,
+            incident_description: document.getElementById('incident_description').value,
             case_type: document.getElementById('case_type').value,
+            injury_date: document.getElementById('injury_date').value,
+            exposure_date: document.getElementById('exposure_date').value,
             audit_metadata: dynamicData,
             pathology_impression: document.getElementById('pathology').value,
             signature_base64: signaturePad.toDataURL(),
             apollo_form_id: document.getElementById('apollo_form_id').value,
+            form_id: document.getElementById('form_id').value,
+            handling_firm: document.getElementById('handling_firm').value,
+            marketing_source: document.getElementById('marketing_source').value,
+            marketing_sub_source: document.getElementById('marketing_sub_source').value,
+            additional_marketing_source_information: document.getElementById('additional_marketing_source_information').value,
             submitted_at: new Date().toISOString()
         };
         
