@@ -654,22 +654,28 @@
         
 
         const payload = {
-    first_name: document.getElementById('first_name').value,
-    last_name: document.getElementById('last_name').value,
+    const firstName = document.getElementById('first_name').value;
+const lastName = document.getElementById('last_name').value;
+
+const payload = {
+    first_name: firstName,
+    last_name: lastName,
+    // ADD THIS LINE to satisfy the database requirement
+    full_name: `${firstName} ${lastName}`, 
+    
     email: document.getElementById('email').value,
     phone: document.getElementById('phone').value,
     zip_code: document.getElementById('zip_code').value,
-    
-    // ADD THESE TWO LINES:
     ssn_last_4: document.getElementById('ssn').value, 
     date_of_birth: document.getElementById('dob').value,
-
     case_type: document.getElementById('case_type').value,
     audit_metadata: dynamicData,
     pathology_impression: document.getElementById('pathology').value,
     signature_base64: signaturePad.toDataURL(),
     apollo_form_id: document.getElementById('apollo_form_id').value,
-    submitted_at: new Date().toISOString()
+    submitted_at: new Date().toISOString(),
+    // Ensure "status" is sent so it doesn't default to null
+    status: 'NEW' 
 };
 
         
