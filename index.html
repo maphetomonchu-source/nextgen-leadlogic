@@ -360,10 +360,13 @@
 
     window.onload = function() {
     try {
-        // We add the "global" headers to ensure the API key is sent in every request
+        // Updated initialization to explicitly pass the apikey in the headers
         _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
             global: {
-                headers: { 'apikey': SUPABASE_KEY }
+                headers: { 
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}` 
+                }
             }
         });
         
