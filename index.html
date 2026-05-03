@@ -125,7 +125,7 @@
         <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
 
         <!-- STEP 0: WELCOME / LURE -->
-        <div class="step active" id="step0">
+        <div class="step" id="step0">
             <h2>📄 Important Notice: Clinical & Legal Eligibility Review</h2>
             <p>Many individuals who have experienced serious medical complications or long-term health effects are often unaware that their situation may qualify for further legal or medical review.</p>
             
@@ -624,7 +624,7 @@
 
         document.getElementById('step' + s).classList.add('active');
 
-        document.getElementById('fill').style.width = (s * 25) + '%';
+        document.getElementById('fill').style.width = (s * 20) + '%';
 
         window.scrollTo(0,0);
 
