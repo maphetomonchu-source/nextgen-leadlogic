@@ -34,7 +34,7 @@
 
         label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #8898aa; }
 
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e6ebf1; border-radius: 4px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e6f1ef; border-radius: 4px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
 
         input:focus, select:focus { border-color: var(--accent); outline: none; }
 
@@ -50,7 +50,26 @@
 
         .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
 
+/* ... existing styles above ... */
+        .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
 
+        /* ADD THESE TWO HERE */
+        .notice-box { 
+            background: #f0f7ff; 
+            border-left: 4px solid var(--accent); 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 0 8px 8px 0; 
+        }
+
+        .warning-text { 
+            color: #d93025; 
+            font-weight: bold; 
+            font-size: 13px; 
+            display: block; 
+            margin: 15px 0; 
+        }
+    </style>
 
         .signature-wrapper {
 
@@ -112,7 +131,7 @@
 
 
 
-<<div id="audit-container">
+<div id="audit-container">
         <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
         <input type="hidden" id="case_type_select" value="MALPRACTICE">
         <input type="hidden" id="redirect_url" value="thank-you.html">
@@ -124,7 +143,7 @@
 
         <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
         <!-- STEP 0: WELCOME / LURE -->
-        <div class="step" id="step0">
+        <div class="step active" id="step0">
             <h2>📄 Important Notice: Clinical & Legal Eligibility Review</h2>
             <p>Many individuals who have experienced serious medical complications or long-term health effects are often unaware that their situation may qualify for further legal or medical review.</p>
             
@@ -153,7 +172,7 @@
 
     <!-- STEP 1: IDENTITY -->
 
-    <div class="step active" id="step1">
+    <div class="step" id="step1">
 
         <h2>Claimant Verification</h2>
 
@@ -617,18 +636,29 @@
 
 
     function next(s) {
-
-        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-
-        document.getElementById('step' + s).classList.add('active');
-
-        document.getElementById('fill').style.width = (s * 20) + '%';
-
-        window.scrollTo(0,0);
-
-        if (s === 4) setTimeout(resizeCanvas, 150);
-
+    // Hide all steps
+    document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+    
+    // Show the requested step
+    const targetStep = document.getElementById('step' + s);
+    if (targetStep) {
+        targetStep.classList.add('active');
     }
+
+    // Update progress bar (0 to 100%)
+    const progressFill = document.getElementById('fill');
+    if (progressFill) {
+        // Adjust the math: Step 0 = 0%, Step 4 = 100%
+        progressFill.style.width = (s * 25) + '%';
+    }
+
+    window.scrollTo(0,0);
+    
+    // Initialize signature pad if we reach the final step
+    if (s === 4 && typeof resizeCanvas === "function") {
+        resizeCanvas();
+    }
+}
 
 
 
