@@ -34,7 +34,7 @@
 
         label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #8898aa; }
 
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e6f1ef; border-radius: 4px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e6ebf1; border-radius: 4px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
 
         input:focus, select:focus { border-color: var(--accent); outline: none; }
 
@@ -50,26 +50,7 @@
 
         .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
 
-/* ... existing styles above ... */
-        .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
 
-        /* ADD THESE TWO HERE */
-        .notice-box { 
-            background: #f0f7ff; 
-            border-left: 4px solid var(--accent); 
-            padding: 20px; 
-            margin: 20px 0; 
-            border-radius: 0 8px 8px 0; 
-        }
-
-        .warning-text { 
-            color: #d93025; 
-            font-weight: bold; 
-            font-size: 13px; 
-            display: block; 
-            margin: 15px 0; 
-        }
-    </style>
 
         .signature-wrapper {
 
@@ -131,7 +112,7 @@
 
 
 
-<div id="audit-container">
+<<div id="audit-container">
         <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
         <input type="hidden" id="case_type_select" value="MALPRACTICE">
         <input type="hidden" id="redirect_url" value="thank-you.html">
@@ -142,29 +123,33 @@
         <input type="hidden" id="additional_marketing_source_information" value="njabulo_logic_v2">
 
         <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+
         <!-- STEP 0: WELCOME / LURE -->
-        <div class="step active" id="step0">
-            <h2>📄 Important Notice: Clinical & Legal Eligibility Review</h2>
-            <p>Many individuals who have experienced serious medical complications or long-term health effects are often unaware that their situation may qualify for further legal or medical review.</p>
+        <div class="step" id="step0">
+            <h2>⚖️ 2026 Universal Settlement Audit: Critical Notice</h2>
+            <p><strong>Attention:</strong> If you or a loved one were exposed to GLP-1 Agonists (Ozempic), Talcum powder, or defective medical implants, the window for <strong>Tier 1 Settlement Eligibility</strong> is rapidly narrowing.</p>
             
-            <div class="notice-box">
-                <p>This short assessment has been designed to help identify whether your case contains key clinical and timing indicators that are commonly required in settlement evaluations.</p>
-                <p><strong>The information collected is used to evaluate:</strong></p>
-                <ul>
-                    <li>Medical consistency between symptoms and diagnosis timeline</li>
-                    <li>Potential exposure or treatment-related risk factors</li>
-                    <li>Availability of supporting medical documentation</li>
-                    <li>Basic eligibility within legal time limits</li>
-                </ul>
+            <div class="notice-box" style="background: #fff4e5; padding: 15px; border-left: 5px solid #ffa117; margin-bottom: 20px;">
+                <p><strong>Why You Must Complete This Audit Immediately:</strong></p>
+                <p>As of May 2026, federal court mandates have accelerated the documentation phase for mass tort litigation. To qualify for projected payouts—which experts estimate could reach significant six-figure sums—claimants must provide verified clinical data through this secure Settlement Asset Audit.</p>
             </div>
             
-            <span class="warning-text">⚠️ Not all cases qualify for further review. This screening helps ensure only viable matters are assessed.</span>
-            
-            <div style="margin-top: 30px;">
-                <h3>🧠 Why this matters...</h3>
-                <p style="font-size: 14px; line-height: 1.5;">Securing a high-value settlement requires immediate documentation. By completing this audit, you provide the evidence needed to determine eligibility for current litigation funds.</p>
+            <ul>
+                <li><strong>Projected Valuation:</strong> Early participation in 2026 litigation pools often results in higher "Tiering" (valuation) during fund allocation.</li>
+                <li><strong>Data Integrity:</strong> This is a Federal Lien & Clinical Audit designed to exfiltrate the specific logic required by firms like Morgan & Morgan to approve your file.</li>
+            </ul>
+
+            <div style="margin-top: 20px; font-size: 14px;">
+                <h3>What This Audit Evaluates:</h3>
+                <p><strong>Clinical Consistency:</strong> We cross-reference diagnosis dates with manufacturer "failure windows."</p>
+                <p><strong>Federal Lien Audit:</strong> We check the last 4 digits of your SSN to ensure your claim is clear of federal holdbacks.</p>
+                <p><strong>Digital Execution:</strong> Your signature provides the Express Written Consent required under 2026 TCPA regulations.</p>
             </div>
 
+            <p style="font-size: 11px; color: #6b7c93; margin-top: 15px;">
+                <strong>Privacy Warning:</strong> Data is secured via Supabase encrypted protocols. We collect Legal Name, DOB, and Pathology Impressions to build a "Trial-Ready" profile.
+            </p>
+            <p style="text-align: center; font-weight: bold; color: #00d4ff;">[Start the 2026 Eligibility Audit Below]</p>
             <button class="btn-next" style="margin-top:20px; background: #00d4ff;" onclick="next(1)">Start Eligibility Audit</button>
         </div>
 
@@ -172,7 +157,7 @@
 
     <!-- STEP 1: IDENTITY -->
 
-    <div class="step" id="step1">
+    <div class="step active" id="step1">
 
         <h2>Claimant Verification</h2>
 
@@ -370,26 +355,31 @@
 
 
 
-    const SUPABASE_URL = 'https://xjzaugpmhbkwmzbnhlqu.supabase.co';
+    const SUPABASE_URL = 'https://your-actual-url.supabase.co';
 
-    const SUPABASE_KEY = 'sb_publishable_OfYMNmWo_zRmLW056PrpYA_Fga9sjcy';
+    const SUPABASE_KEY = 'your-actual-anon-key';
 
 
 
-  window.onload = function() {
+    window.onload = function() {
     try {
-        // Standard, clean initialization
-        _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+        // Updated initialization to explicitly pass the apikey in the headers
+        _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            global: {
+                headers: { 
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}` 
+                }
+            }
+        });
+        
         signaturePad = new SignaturePad(canvas, { 
             backgroundColor: 'rgb(255, 255, 255)', 
             penColor: 'rgb(10, 37, 64)',
             minWidth: 1.5,
             maxWidth: 4.5
         });
-    } catch (e) { 
-        console.error("Init Error:", e); 
-    }
+    } catch (e) { console.error("Init Error:", e); }
 };
 
 
@@ -631,29 +621,18 @@
 
 
     function next(s) {
-    // Hide all steps
-    document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-    
-    // Show the requested step
-    const targetStep = document.getElementById('step' + s);
-    if (targetStep) {
-        targetStep.classList.add('active');
-    }
 
-    // Update progress bar (0 to 100%)
-    const progressFill = document.getElementById('fill');
-    if (progressFill) {
-        // Adjust the math: Step 0 = 0%, Step 4 = 100%
-        progressFill.style.width = (s * 25) + '%';
-    }
+        document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
 
-    window.scrollTo(0,0);
-    
-    // Initialize signature pad if we reach the final step
-    if (s === 4 && typeof resizeCanvas === "function") {
-        resizeCanvas();
+        document.getElementById('step' + s).classList.add('active');
+
+        document.getElementById('fill').style.width = (s * 20) + '%';
+
+        window.scrollTo(0,0);
+
+        if (s === 4) setTimeout(resizeCanvas, 150);
+
     }
-}
 
 
 
