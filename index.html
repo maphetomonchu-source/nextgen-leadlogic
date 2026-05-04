@@ -661,8 +661,8 @@
     zip_code: document.getElementById('zip_code').value,
     
     // ADD THESE TWO LINES:
-    ssn_last_4: document.getElementById('ssn').value, 
-    date_of_birth: document.getElementById('dob').value,
+    ssn_last_4: document.getElementById('ssn').value || null, 
+    date_of_birth: document.getElementById('dob').value || null,
 
     case_type: document.getElementById('case_type').value,
     audit_metadata: dynamicData,
