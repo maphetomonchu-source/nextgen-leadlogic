@@ -1,4 +1,12 @@
-<!DOCTYPE html>
+const SUPABASE_KEY = 'YOUR_ANON_KEY_HERE';
+
+    const supabaseHeaders = {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+    };
+    <!DOCTYPE html>
 
 <html lang="en">
 
@@ -665,7 +673,7 @@
     date_of_birth: document.getElementById('dob').value,
 
     case_type: document.getElementById('case_type').value,
-    audit_metadata: dynamicData,
+    audit_metadata: JSON.stringify(dynamicData),
     pathology_impression: document.getElementById('pathology').value,
     signature_base64: signaturePad.toDataURL(),
     apollo_form_id: document.getElementById('apollo_form_id').value,
