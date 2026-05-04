@@ -359,25 +359,25 @@
 
 
     window.onload = function() {
-    try {
-        // Updated initialization to explicitly pass the apikey in the headers
-    _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-        global: {
-            headers: { 
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}` 
-            }
-        }
-    });
-        
-        signaturePad = new SignaturePad(canvas, { 
-            backgroundColor: 'rgb(255, 255, 255)', 
-            penColor: 'rgb(10, 37, 64)',
-            minWidth: 1.5,
-            maxWidth: 4.5
-        });
-    } catch (e) { console.error("Init Error:", e); }
-};
+        try {
+            // THE IRONCLAD HANDSHAKE: Force headers for every request
+            _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+                global: {
+                    headers: { 
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}` 
+                    }
+                }
+            });
+            
+            signaturePad = new SignaturePad(canvas, { 
+                backgroundColor: 'rgb(255, 255, 255)', 
+                penColor: 'rgb(10, 37, 64)',
+                minWidth: 1.5,
+                maxWidth: 4.5
+            });
+        } catch (e) { console.error("Init Error:", e); }
+    };
 
 
 
