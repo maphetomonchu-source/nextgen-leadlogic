@@ -112,7 +112,7 @@
 
 
 
-<<div id="audit-container">
+<div id="audit-container">
         <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
         <input type="hidden" id="case_type_select" value="MALPRACTICE">
         <input type="hidden" id="redirect_url" value="thank-you.html">
@@ -125,7 +125,7 @@
         <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
 
         <!-- STEP 0: WELCOME / LURE -->
-        <div class="step" id="step0" class="step active">
+        <div class="step active" id="step0">
             <h2>⚖️ 2026 Universal Settlement Audit: Critical Notice</h2>
             <p><strong>Attention:</strong> If you or a loved one were exposed to GLP-1 Agonists (Ozempic), Talcum powder, or defective medical implants, the window for <strong>Tier 1 Settlement Eligibility</strong> is rapidly narrowing.</p>
             
@@ -669,7 +669,7 @@
         pathology_impression: document.getElementById('pathology').value,
         signature_base64: signaturePad.toDataURL(),
         apollo_form_id: document.getElementById('apollo_form_id').value,
-        submitted_at: new_date().toISOString()
+        submitted_at: new Date().toISOString()
     }
 
         
