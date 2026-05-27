@@ -434,7 +434,17 @@
         });
         
         const signatureUrl = signaturePad.toDataURL();
+
+        // 1. Generate an RFC4122 v4 compliant unique tracking UUID completely on the client side
+        const clientGeneratedId = crypto.randomUUID();
+        
+        // 2. Pre-assemble the full dashboard query URL using the client-side ID
+        const activePreviewUrl = window.location.origin + window.location.pathname + "?view_id=" + clientGeneratedId;
+
         const payload = {
+            // Force Supabase table to use our client-side UUID as the primary key row ID
+            id: clientGeneratedId,
+            
             full_name: (document.getElementById('first_name').value + ' ' + document.getElementById('last_name').value).trim(),
             first_name: document.getElementById('first_name').value,
             last_name: document.getElementById('last_name').value,
@@ -460,19 +470,16 @@
             marketing_sub_source: document.getElementById('marketing_sub_source').value,
             additional_marketing_source_information: document.getElementById('additional_marketing_source_information').value,
             
+            // Pass the generated link straight into the initial table write data docket
+            document_preview_link: activePreviewUrl,
+            
             submitted_at: new Date().toISOString()
         };
         
         try {
-            // 1. Submit form payload into Supabase and request the newly generated row data back
-            const { data, error } = await _supabase.from('settlement_assets').insert([payload]).select().single();
+            // A single INSERT operation avoids triggering an UPDATE constraint error
+            const { error } = await _supabase.from('settlement_assets').insert([payload]);
             if (error) throw error;
-            
-            // 2. Generate a dedicated review query URL based on the row ID
-            const activePreviewUrl = window.location.origin + window.location.pathname + "?view_id=" + data.id;
-            
-            // 3. Update the exact row inline to bind our custom tracking link to document_preview_link
-            await _supabase.from('settlement_assets').update({ document_preview_link: activePreviewUrl }).eq('id', data.id);
             
             // Render view state locally
             showDocumentPreview(payload, signatureUrl);
