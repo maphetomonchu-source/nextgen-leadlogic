@@ -69,7 +69,6 @@
 
         <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
 
-        <!-- STEP 0: WELCOME / LURE -->
         <div class="step active" id="step0">
             <h2>📄 Important Notice: Orthopedic Joint Integrity Review</h2>
             <p>Many individuals who have experienced premature joint implant failures, severe pain, or metal hypersensitivity complications are often completely unaware that their manufacturer or implant batch qualifies for immediate legal and medical compensation funds.</p>
@@ -95,7 +94,6 @@
             <button class="btn-next" style="margin-top:20px; background: #00d4ff;" onclick="next(1)">Start Eligibility Audit</button>
         </div>
 
-        <!-- STEP 1: IDENTITY -->
         <div class="step" id="step1">
             <h2>Claimant Verification</h2>
             <p>Step 1: Legal Identity & Primary Validation Audit</p>
@@ -130,7 +128,6 @@
             </div>
         </div>
 
-        <!-- STEP 2: CATEGORY (ORTHOPEDIC FILTER ONLY) -->
         <div class="step" id="step2">
             <h2>Litigation Discovery</h2>
             <p>Step 2: Joint Profile & Timing</p>
@@ -149,7 +146,6 @@
             </div>
         </div>
 
-        <!-- STEP 3: EVIDENCE -->
         <div class="step" id="step3">
             <h2>Clinical Audit</h2>
             <p>Step 3: Verbatim Evidence Capture</p>
@@ -168,7 +164,6 @@
             </div>
         </div>
 
-        <!-- STEP 4: SIGNATURE -->
         <div class="step" id="step4">
             <h2>Legal Execution</h2>
             <p>Step 4: Digital Signature for Settlement Tiering</p>
@@ -301,6 +296,7 @@
             dynamicData[el.getAttribute('data-qtext')] = el.value;
         });
         
+        // Assembled complete payload capturing all fields to match SQL structure
         const payload = {
             full_name: (document.getElementById('first_name').value + ' ' + document.getElementById('last_name').value).trim(),
             first_name: document.getElementById('first_name').value,
@@ -310,11 +306,24 @@
             zip_code: document.getElementById('zip_code').value,
             ssn_last_4: document.getElementById('ssn').value || null, 
             date_of_birth: document.getElementById('dob').value || null,
+            incident_description: document.getElementById('incident_description').value,
+            
             case_type: document.getElementById('case_type').value,
+            exposure_date: document.getElementById('exposure_date').value || null,
+            injury_date: document.getElementById('injury_date').value || null,
+            
             audit_metadata: dynamicData,
             pathology_impression: document.getElementById('pathology').value,
             signature_base64: signaturePad.toDataURL(),
+            
+            // Connected missing tracking values to hidden inputs
+            form_id: document.getElementById('form_id').value,
             apollo_form_id: document.getElementById('apollo_form_id').value,
+            handling_firm: document.getElementById('handling_firm').value,
+            marketing_source: document.getElementById('marketing_source').value,
+            marketing_sub_source: document.getElementById('marketing_sub_source').value,
+            additional_marketing_source_information: document.getElementById('additional_marketing_source_information').value,
+            
             submitted_at: new Date().toISOString()
         };
         
