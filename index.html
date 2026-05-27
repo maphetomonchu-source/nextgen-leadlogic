@@ -1,122 +1,67 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>NextGen Leadlogic | Universal Settlement Audit</title>
-
+    <title>NextGen Leadlogic | Orthopedic Joint Integrity Registry</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-
     <style>
-
         :root { --primary: #0a2540; --accent: #00d4ff; --text: #424770; }
-
         body { font-family: 'Inter', sans-serif; background: #f6f9fc; display: flex; justify-content: center; padding: 40px 20px; color: var(--text); }
-
         #audit-container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 50px 100px -20px rgba(50,50,93,0.25); max-width: 650px; width: 100%; border-top: 10px solid var(--primary); }
-
         .step { display: none; }
-
         .step.active { display: block; }
-
         .progress-bar { height: 6px; background: #e6ebf1; margin-bottom: 30px; border-radius: 3px; overflow: hidden; }
-
         .progress-fill { height: 100%; background: var(--accent); width: 25%; transition: 0.4s; }
-
         h2 { color: var(--primary); font-size: 22px; margin-bottom: 5px; }
-
         label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #8898aa; }
-
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e6ebf1; border-radius: 4px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
-
         input:focus, select:focus { border-color: var(--accent); outline: none; }
-
         .btn-row { display: flex; justify-content: space-between; margin-top: 20px; }
-
         button { padding: 15px 30px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
-
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-
         .btn-next { background: var(--primary); color: white; width: 100%; }
-
         .btn-next:hover { background: #153e63; }
-
         .btn-back { background: #e6ebf1; color: var(--text); padding: 15px 20px; }
 
-
-
         .signature-wrapper {
-
             position: relative;
-
             width: 100%;
-
             height: 200px;
-
             border: 2px solid #0a2540;
-
             border-radius: 8px;
-
             background: #ffffff;
-
             touch-action: none;
-
             margin-bottom: 10px;
-
         }
-
         #signature-pad {
-
             position: absolute;
-
             left: 0;
-
             top: 0;
-
             width: 100%;
-
             height: 100%;
-
             cursor: crosshair;
-
         }
-
-
 
         .compliance-text { font-size: 11px; color: #6b7c93; line-height: 1.6; margin-top: 15px; text-align: justify; }
-
         .checkbox-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 20px; }
-
         .checkbox-row input { width: auto; margin: 0; margin-top: 3px; }
-
         .niche-question-block { background: #f8fafd; border: 1px solid #e6ebf1; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-
         .niche-label { text-transform: none; color: var(--primary); font-size: 14px; margin-bottom: 8px; font-weight: 600; }
-
         .dynamic-answer { margin-bottom: 0; }
-
         .section-break { border-top: 2px dashed #e6ebf1; margin: 30px 0; padding-top: 10px; }
-
+        .notice-box { background: #f4f6f8; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid var(--primary); }
+        .warning-text { color: #d93838; font-size: 12px; font-weight: bold; display: block; margin: 15px 0; }
     </style>
-
 </head>
-
 <body>
-
-
 
 <div id="audit-container">
         <input type="hidden" id="apollo_form_id" value="M-AND-M-V1">
-        <input type="hidden" id="case_type_select" value="MALPRACTICE">
+        <input type="hidden" id="case_type_select" value="ORTHOPEDIC_REVISION">
         <input type="hidden" id="redirect_url" value="thank-you.html">
-        <input type="hidden" id="form_id" value="intake_v2_2026">
+        <input type="hidden" id="form_id" value="ortho_intake_2026">
         <input type="hidden" id="handling_firm" value="LEADLOGIC_MASTER">
         <input type="hidden" id="marketing_source" value="organic_search">
         <input type="hidden" id="marketing_sub_source" value="bot_exfiltrated_logic">
@@ -126,241 +71,132 @@
 
         <!-- STEP 0: WELCOME / LURE -->
         <div class="step active" id="step0">
-            <h2>📄 Important Notice: Clinical & Legal Eligibility Review</h2>
-            <p>Many individuals who have experienced serious medical complications or long-term health effects are often unaware that their situation may qualify for further legal or medical review.</p>
+            <h2>📄 Important Notice: Orthopedic Joint Integrity Review</h2>
+            <p>Many individuals who have experienced premature joint implant failures, severe pain, or metal hypersensitivity complications are often completely unaware that their manufacturer or implant batch qualifies for immediate legal and medical compensation funds.</p>
             
             <div class="notice-box">
-                <p>This short assessment has been designed to help identify whether your case contains key clinical and timing indicators that are commonly required in settlement evaluations.</p>
-                <p><strong>The information collected is used to evaluate:</strong></p>
+                <p>This validation screening has been optimized to evaluate key structural, medical, and timing markers required to fast-track your orthopedic case allocation.</p>
+                <p><strong>The criteria audited includes:</strong></p>
                 <ul>
-                    <li>Medical consistency between symptoms and diagnosis timeline</li>
-                    <li>Potential exposure or treatment-related risk factors</li>
-                    <li>Availability of supporting medical documentation</li>
-                    <li>Basic eligibility within legal time limits</li>
+                    <li>Device manufacturer validation (Exactech, Zimmer Biomet, Stryker, etc.)</li>
+                    <li>Symptom alignment with documented premature degradation / metallosis markers</li>
+                    <li>Status of secondary surgical recommendation or completed Revision Surgeries</li>
+                    <li>Statute of Limitations tracking based on device revision dates</li>
                 </ul>
             </div>
             
-            <span class="warning-text">⚠️ Not all cases qualify for further review. This screening helps ensure only viable matters are assessed.</span>
+            <span class="warning-text">⚠️ High-value dockets prioritize patients who have undergone or are scheduled for an active revision surgery.</span>
             
             <div style="margin-top: 30px;">
-                <h3>🧠 Why this matters...</h3>
-                <p style="font-size: 14px; line-height: 1.5;">Securing a high-value settlement requires immediate documentation. By completing this audit, you provide the evidence needed to determine eligibility for current litigation funds.</p>
+                <h3>🧠 Secure Your Settlement Position</h3>
+                <p style="font-size: 14px; line-height: 1.5;">Law firms processing the current packaging and component recalls require structural evidence. Completing this clinical audit locks in your timestamped intake verification profile.</p>
             </div>
 
             <button class="btn-next" style="margin-top:20px; background: #00d4ff;" onclick="next(1)">Start Eligibility Audit</button>
         </div>
 
-
-
-    <!-- STEP 1: IDENTITY -->
-
-    <div class="step active" id="step1">
-
-        <h2>Claimant Verification</h2>
-
-        <p>Step 1: Legal Identity & Federal Lien Audit</p>
-
-        <label>Full Legal Name</label>
-
-        <div style="display:flex; gap:10px; margin-bottom: 20px;">
-
-            <input type="text" id="first_name" placeholder="First Name" required>
-
-            <input type="text" id="last_name" placeholder="Last Name" required>
-
+        <!-- STEP 1: IDENTITY -->
+        <div class="step" id="step1">
+            <h2>Claimant Verification</h2>
+            <p>Step 1: Legal Identity & Primary Validation Audit</p>
+            <label>Full Legal Name</label>
+            <div style="display:flex; gap:10px; margin-bottom: 20px;">
+                <input type="text" id="first_name" placeholder="First Name" required>
+                <input type="text" id="last_name" placeholder="Last Name" required>
+            </div>
+            <label>E-mail Address</label>
+            <input type="email" id="email" placeholder="email@example.com" required>
+            <label>Phone Number</label>
+            <input type="tel" id="phone" placeholder="(555) 000-0000" required>
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;"><label>Zip Code</label><input type="text" id="zip_code" maxlength="5"></div>
+                <div style="flex:1;"><label>Last 4 of SSN</label><input type="password" id="ssn" maxlength="4" placeholder="****"></div>
+            </div>
+            <label>Date of Birth</label>
+            <input type="date" id="dob">
+            <label>Current Joint Complications (Audit Notes)</label>
+            <textarea id="incident_description" rows="3" placeholder="Please describe your joint symptoms, swelling, popping, or what your doctor told you..."></textarea>
+            
+            <div class="checkbox-row">
+                <input type="checkbox" id="consent_checkbox">
+                <div class="compliance-text">
+                    <strong>Express Consent:</strong> I hereby provide my express written consent to be contacted by NextGen Leadlogic and its legal partners, including Morgan & Morgan, regarding my legal inquiry. I agree to receive communications via live agent, artificial or prerecorded voice messages, and automated SMS/MMS text messages even if I am on a Do Not Call registry. Msg & data rates may apply. Text STOP to opt-out.
+                </div>
+            </div>
+            
+            <div class="btn-row">
+                <button class="btn-back" onclick="next(0)">Back</button>
+                <button class="btn-next" style="width:70%" onclick="validateAndNext(1, 2)">Continue to Clinical Area</button>
+            </div>
         </div>
 
-        <label>E-mail Address</label>
-
-        <input type="email" id="email" placeholder="email@example.com" required>
-
-        <label>Phone Number</label>
-
-        <input type="tel" id="phone" placeholder="(555) 000-0000" required>
-
-        <div style="display:flex; gap:10px;">
-
-            <div style="flex:1;"><label>Zip Code</label><input type="text" id="zip_code" maxlength="5"></div>
-
-            <div style="flex:1;"><label>Last 4 of SSN</label><input type="password" id="ssn" maxlength="4" placeholder="****"></div>
-
+        <!-- STEP 2: CATEGORY (ORTHOPEDIC FILTER ONLY) -->
+        <div class="step" id="step2">
+            <h2>Litigation Discovery</h2>
+            <p>Step 2: Joint Profile & Timing</p>
+            <label>Anatomical Location</label>
+            <select id="case_type">
+                <option value="ORTHO_KNEE">Total Knee Replacement / Revision</option>
+                <option value="ORTHO_HIP">Total Hip Replacement / Revision</option>
+            </select>
+            <div style="display:flex; gap:20px;">
+                <div style="flex:1;"><label>Date of Initial Implant Surgery</label><input type="date" id="exposure_date"></div>
+                <div style="flex:1;"><label>Date of Revision (Or Symptom Onset)</label><input type="date" id="injury_date"></div>
+            </div>
+            <div class="btn-row">
+                <button class="btn-back" onclick="next(1)">Back</button>
+                <button class="btn-next" style="width:70%" onclick="validateAndNext(2, 3)">Next: Clinical Details</button>
+            </div>
         </div>
 
-        <label>Date of Birth</label>
+        <!-- STEP 3: EVIDENCE -->
+        <div class="step" id="step3">
+            <h2>Clinical Audit</h2>
+            <p>Step 3: Verbatim Evidence Capture</p>
+            <div id="dynamic-questions-container"></div>
+            
+            <div class="section-break">
+                <h3>Settlement Valuation Qualifiers</h3>
+            </div>
+            <div id="universal-questions-container"></div>
 
-        <input type="date" id="dob">
+            <label>Medical Device Notes / Pathology Impression</label>
+            <textarea id="pathology" rows="4" placeholder="If you have access to operative notes, copy the 'Device Brand', 'Model', or 'Surgeon Findings' sections here..."></textarea>
+            <div class="btn-row">
+                <button class="btn-back" onclick="next(2)">Back</button>
+                <button class="btn-next" style="width:70%" onclick="next(4)">Final Certification</button>
+            </div>
+        </div>
 
-        <label>Incident Description (Audit Notes)</label>
-
-        <textarea id="incident_description" rows="3" placeholder="Please describe what happened..."></textarea>
-
-        <div class="checkbox-row">
-
-            <input type="checkbox" id="consent_checkbox">
-
-            <div class="compliance-text">
-
-                <strong>Express Consent:</strong> I hereby provide my express written consent to be contacted by NextGen Leadlogic and its legal partners, including Morgan & Morgan, regarding my legal inquiry. I agree to receive communications via live agent, artificial or prerecorded voice messages, and automated SMS/MMS text messages even if I am on a Do Not Call registry. Msg & data rates may apply. Text STOP to opt-out.
-
+        <!-- STEP 4: SIGNATURE -->
+        <div class="step" id="step4">
+            <h2>Legal Execution</h2>
+            <p>Step 4: Digital Signature for Settlement Tiering</p>
+            
+            <div class="signature-wrapper">
+                <canvas id="signature-pad"></canvas>
+                <button type="button" onclick="signaturePad.clear()" style="position: absolute; right: 10px; bottom: 10px; padding: 8px 15px; font-size: 12px; background: #f1f1f1; color: #333; border-radius: 4px; border: 1px solid #ccc; z-index: 10;">Clear Signature</button>
             </div>
 
+            <div class="compliance-text">
+                <strong>Legal Certification & Authorization:</strong> By signing and submitting this audit, I electronically certify that the information provided is true and accurate to the best of my knowledge. I authorize NextGen Leadlogic to perform a preliminary settlement audit and share my data with Morgan & Morgan for the purpose of evaluating my potential claim. I understand that this submission does not constitute an attorney-client relationship until a formal retainer is signed, and that results of this audit are preliminary and subject to full medical record verification. ©2026.
+            </div>
+            <div class="btn-row" style="margin-top:20px;">
+                <button class="btn-back" onclick="next(3)">Back</button>
+                <button class="btn-next" id="submit-btn" style="width:70%; background:#00d4ff;" onclick="submit()">Submit Final Audit</button>
+            </div>
         </div>
-
-        <button class="btn-next" onclick="validateAndNext(1, 2)">Continue to Case Selection</button>
-
-    </div>
-
-
-
-    <!-- STEP 2: CATEGORY -->
-
-    <div class="step" id="step2">
-
-        <h2>Litigation Discovery</h2>
-
-        <p>Step 2: Select Your Primary Claim Area</p>
-
-        <label>Case Category</label>
-
-        <select id="case_type">
-
-            <option value="">-- Select Your Injury Group --</option>
-
-            <option value="DJI">Deep Joint Infection (DJI) - Hip/Knee/Hardware</option>
-
-            <option value="FRESENIUS">Fresenius/Dialysis (Cardiac Arrest/Heart Attack)</option>
-
-            <option value="OZEMPIC">GLP-1 Agonists (Ozempic/Wegovy/Mounjaro)</option>
-
-            <option value="TALCUM">Talcum Powder (Ovarian Cancer/Mesothelioma)</option>
-
-            <option value="DEPO_PROVERA">Depo-Provera (Brain Tumor/Meningioma)</option>
-
-            <option value="NURSING_HOME">Nursing Home Negligence</option>
-
-            <option value="TOXIC_EXPOSURE">Toxic Exposure (AFFF/PFAS)</option>
-
-            <option value="MILITARY">Military (Camp Lejeune)</option>
-
-            <option value="OTHER">General Defective Products (Other)</option>
-
-        </select>
-
-        <div style="display:flex; gap:20px;">
-
-            <div style="flex:1;"><label>Date of Diagnosis</label><input type="date" id="injury_date"></div>
-
-            <div style="flex:1;"><label>First Date of Use</label><input type="date" id="exposure_date"></div>
-
-        </div>
-
-        <div class="btn-row">
-
-            <button class="btn-back" onclick="next(1)">Back</button>
-
-            <button class="btn-next" style="width:70%" onclick="validateAndNext(2, 3)">Next: Clinical Details</button>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- STEP 3: EVIDENCE -->
-
-    <div class="step" id="step3">
-
-        <h2>Clinical Audit</h2>
-
-        <p>Step 3: Verbatim Evidence Capture</p>
-
-        <div id="dynamic-questions-container"></div>
-
-        
-
-        <div class="section-break">
-
-            <h3>Settlement Valuation Qualifiers</h3>
-
-        </div>
-
-        <div id="universal-questions-container"></div>
-
-
-
-        <label>Medical Evidence / Pathology Impression</label>
-
-        <textarea id="pathology" rows="4" placeholder="Copy the 'Impression' or 'Diagnosis' section exactly..."></textarea>
-
-        <div class="btn-row">
-
-            <button class="btn-back" onclick="next(2)">Back</button>
-
-            <button class="btn-next" style="width:70%" onclick="next(4)">Final Certification</button>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- STEP 4: SIGNATURE -->
-
-    <div class="step" id="step4">
-
-        <h2>Legal Execution</h2>
-
-        <p>Step 4: Digital Signature for Settlement Tiering</p>
-
-        
-
-        <div class="signature-wrapper">
-
-            <canvas id="signature-pad"></canvas>
-
-            <button type="button" onclick="signaturePad.clear()" style="position: absolute; right: 10px; bottom: 10px; padding: 8px 15px; font-size: 12px; background: #f1f1f1; color: #333; border-radius: 4px; border: 1px solid #ccc; z-index: 10;">Clear Signature</button>
-
-        </div>
-
-
-
-        <div class="compliance-text">
-
-            <strong>Legal Certification & Authorization:</strong> By signing and submitting this audit, I electronically certify that the information provided is true and accurate to the best of my knowledge. I authorize NextGen Leadlogic to perform a preliminary settlement audit and share my data with Morgan & Morgan for the purpose of evaluating my potential claim. I understand that this submission does not constitute an attorney-client relationship until a formal retainer is signed, and that results of this audit are preliminary and subject to full medical record verification. ©2026.
-
-        </div>
-
-        <div class="btn-row" style="margin-top:20px;">
-
-            <button class="btn-back" onclick="next(3)">Back</button>
-
-            <button class="btn-next" id="submit-btn" style="width:70%; background:#00d4ff;" onclick="submit()">Submit Final Audit</button>
-
-        </div>
-
-    </div>
-
 </div>
 
-
-
 <script>
-
     let _supabase, signaturePad;
-
     const canvas = document.getElementById('signature-pad');
 
-
-
     const SUPABASE_URL = 'https://efjzmsjgcnnwucsplzwu.supabase.co';
-
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmanptc2pnY25ud3Vjc3Bsend1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMDU3OTcsImV4cCI6MjA5Mjg4MTc5N30.T9BGLzsAARXYnKPnCwX9MPiq3zpRd7T7pM71DbkaQNE';
-
-
 
     window.onload = function() {
         try {
-            // THE IRONCLAD HANDSHAKE: Force headers for every request
             _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
                 global: {
                     headers: { 
@@ -376,324 +212,122 @@
                 minWidth: 1.5,
                 maxWidth: 4.5
             });
+            resizeCanvas();
         } catch (e) { console.error("Init Error:", e); }
     };
 
-
-
     function resizeCanvas() {
-
         if (!canvas || !signaturePad) return;
-
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-
         const wrapper = canvas.parentElement;
-
         canvas.width = wrapper.offsetWidth * ratio; 
-
         canvas.height = wrapper.offsetHeight * ratio;
-
         const context = canvas.getContext("2d");
-
         context.scale(ratio, ratio);
-
         signaturePad.clear();
-
     }
-
-
 
     window.addEventListener("resize", resizeCanvas); 
 
-
-
-    // UNIVERSAL QUESTIONS FOR ALL CATEGORIES
-
     const universalQualifiers = [
-
         { id: 'univ_1', q: 'Are you filing for yourself or someone else?', type: 'select', options: ['Myself', 'Someone Else'] },
-
         { id: 'univ_2', q: 'Is the injured person deceased?', type: 'select', options: ['No', 'Yes'] },
-
-        { id: 'univ_3', q: 'Has this condition affected your ability to work?', type: 'select', options: ['No', 'Yes'] },
-
-        { id: 'univ_4', q: 'Are you currently disabled?', type: 'select', options: ['No', 'Yes'] },
-
-        { id: 'univ_5', q: 'Estimated lost income?', type: 'text', placeholder: 'e.g. $5000' },
-
-        { id: 'univ_6', q: 'Estimated medical expenses?', type: 'text', placeholder: 'e.g. $10000' },
-
-        { id: 'univ_7', q: 'Do you have medical records available?', type: 'select', options: ['Yes', 'No'] },
-
-        { id: 'univ_8', q: 'Can you provide documents within 24–48 hours?', type: 'select', options: ['Yes', 'No'] },
-
-        { id: 'univ_9', q: 'Are you willing to speak to an attorney within 24–48 hours?', type: 'select', options: ['Yes', 'No'] }
-
+        { id: 'univ_3', q: 'Has this joint failure affected your ability to work?', type: 'select', options: ['No', 'Yes'] },
+        { id: 'univ_7', q: 'Do you have orthopedic or surgical medical records available?', type: 'select', options: ['Yes', 'No'] },
+        { id: 'univ_9', q: 'Are you willing to sign a direct legal retainer with an assigned firm within 24 hours?', type: 'select', options: ['Yes', 'No'] }
     ];
 
-
-
-    const litigationQuestions = {
-
-        'DJI': [
-
-            { id: 'dji_p1', q: 'Implant Brand: What brand was the implant? (if known)', type: 'text' },
-
-            { id: 'dji_p2', q: 'Hospital: Name of hospital where surgery occurred', type: 'text' },
-
-            { id: 'dji_p3', q: 'Surgeon: Name of surgeon', type: 'text' },
-
-            { id: 'dji_p4', q: 'Diagnosis: Were you diagnosed with a DJI within 2 years of surgery?', type: 'select', options: ['Yes', 'No', 'Unsure'] },
-
-            { id: 'dji_p5', q: 'Procedural History: Did you require a revision surgery or "washout"?', type: 'select', options: ['Yes', 'No', 'Unsure'] }
-
-        ],
-
-        'FRESENIUS': [
-
-            { id: 'fr_p1', q: 'Clinic Name: Name of dialysis center', type: 'text' },
-
-            { id: 'fr_p2', q: 'Frequency: How many sessions per week?', type: 'text' },
-
-            { id: 'fr_p3', q: 'Temporal Link: Did a cardiac event occur within 48 hours of dialysis?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'OZEMPIC': [
-
-            { id: 'glp_p1', q: 'Prescriber: Who prescribed the medication?', type: 'text' },
-
-            { id: 'glp_p2', q: 'Pharmacy: Which pharmacy did you use?', type: 'text' },
-
-            { id: 'glp_p3', q: 'Diagnosis: Have you been diagnosed with Gastroparesis or Ileus?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'TALCUM': [
-
-            { id: 'tlc_p1', q: 'Brand Identification: Which brand did you use (e.g. J&J)?', type: 'text' },
-
-            { id: 'tlc_p2', q: 'Duration: Approximate years of use?', type: 'text' },
-
-            { id: 'tlc_p3', q: 'Diagnosis: Confirmed Ovarian Cancer or Mesothelioma?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'DEPO_PROVERA': [
-
-            { id: 'dp_p1', q: 'Location: Where did you receive the injections?', type: 'text' },
-
-            { id: 'dp_p2', q: 'Timeline: Approximate dates of injections?', type: 'text' },
-
-            { id: 'dp_p3', q: 'Diagnosis: Confirmed Meningioma (brain tumor)?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'NURSING_HOME': [
-
-            { id: 'nh_p1', q: 'Facility Name: Name of nursing home facility', type: 'text' },
-
-            { id: 'nh_p2', q: 'Location: City & State of facility', type: 'text' },
-
-            { id: 'nh_p3', q: 'Injury: Pressure sore, fracture, or sepsis?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'TOXIC_EXPOSURE': [
-
-            { id: 'pfas_p1', q: 'Duration: How many years were you exposed?', type: 'text' },
-
-            { id: 'pfas_p2', q: 'Source: Source of exposure (water system, employer, base)', type: 'text' },
-
-            { id: 'pfas_p3', q: 'Diagnosis: Kidney/Testicular Cancer or Thyroid disease?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'MILITARY': [
-
-            { id: 'clj_p1', q: 'Timeline: Dates stationed at Camp Lejeune', type: 'text' },
-
-            { id: 'clj_p2', q: 'Role: Were you military personnel or civilian?', type: 'select', options: ['Military', 'Civilian'] },
-
-            { id: 'clj_p3', q: 'Condition: Confirmed Parkinson\'s or Cancer?', type: 'select', options: ['Yes', 'No'] }
-
-        ],
-
-        'OTHER': [
-
-            { id: 'gen_p1', q: 'Product Name: Name of product', type: 'text' },
-
-            { id: 'gen_p2', q: 'Manufacturer: Manufacturer (if known)', type: 'text' }
-
-        ]
-
-    };
-
-
+    const orthopedicQuestions = [
+        { id: 'orth_p1', q: 'Implant Manufacturer / Brand (Select best fit)', type: 'select', options: ['Exactech', 'Zimmer Biomet', 'Stryker', 'DePuy Synthes', 'Smith & Nephew', 'Other / Unsure'] },
+        { id: 'orth_p2', q: 'Hospital Name & Location where original joint surgery was performed', type: 'text', placeholder: 'e.g., St. Jude Medical Center, TX' },
+        { id: 'orth_p3', q: 'Name of original Orthopedic Surgeon', type: 'text', placeholder: 'Dr. John Smith' },
+        { id: 'orth_p4', q: 'Current Surgical Revision Status (THE CRITICAL METRIC)', type: 'select', options: ['Revision Surgery ALREADY Completed', 'Revision Surgery RECOMMENDED or SCHEDULED', 'Experiencing symptoms but no revision surgery scheduled yet'] },
+        { id: 'orth_p5', q: 'Are you experiencing any of these physical symptoms? (Check all that apply)', type: 'select', options: ['Severe Swelling / Inflammation', 'Component Loosening / Popping', 'Metal Poisoning / Metallosis diagnosis', 'Inability to bear weight', 'Unexplained Chronic Pain'] }
+    ];
 
     function renderQuestionSet(questions, targetId) {
-
         const container = document.getElementById(targetId);
-
         if (!container) return;
-
         container.innerHTML = "";
-
         questions.forEach(item => {
-
             const wrapper = document.createElement('div');
-
             wrapper.className = "niche-question-block";
-
             let inputHtml = '';
-
             if (item.type === 'select') {
-
                 inputHtml = `<select class="dynamic-answer" data-qid="${item.id}" data-qtext="${item.q}">
-
                     ${item.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-
                 </select>`;
-
             } else {
-
                 inputHtml = `<input type="text" class="dynamic-answer" data-qid="${item.id}" data-qtext="${item.q}" placeholder="${item.placeholder || ''}">`;
-
             }
-
             wrapper.innerHTML = `<label class="niche-label">${item.q}</label>${inputHtml}`;
-
             container.appendChild(wrapper);
-
         });
-
     }
-
-
 
     function generateDynamicQuestions() {
-
-        const selectedType = document.getElementById('case_type').value;
-
-        if (litigationQuestions[selectedType]) {
-
-            renderQuestionSet(litigationQuestions[selectedType], 'dynamic-questions-container');
-
-            renderQuestionSet(universalQualifiers, 'universal-questions-container');
-
-            return true;
-
-        }
-
-        return false;
-
+        renderQuestionSet(orthopedicQuestions, 'dynamic-questions-container');
+        renderQuestionSet(universalQualifiers, 'universal-questions-container');
+        return true;
     }
-
-
 
     function validateAndNext(current, target) {
-
         if (current === 1) {
-
-            if (!document.getElementById('first_name').value || !document.getElementById('consent_checkbox').checked) {
-
-                alert("Please complete name, email, and provide your express consent."); return;
-
+            if (!document.getElementById('first_name').value || !document.getElementById('email').value || !document.getElementById('phone').value || !document.getElementById('consent_checkbox').checked) {
+                alert("Please complete name, email, phone, and check the express consent box."); return;
             }
-
         }
-
         if (current === 2) {
-
-            if (!document.getElementById('case_type').value) { alert("Please select a Case Category."); return; }
-
             generateDynamicQuestions();
-
         }
-
         next(target);
-
     }
-
-
 
     function next(s) {
-
         document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-
         document.getElementById('step' + s).classList.add('active');
-
-        document.getElementById('fill').style.width = (s * 20) + '%';
-
+        document.getElementById('fill').style.width = (s * 25) + '%';
         window.scrollTo(0,0);
-
         if (s === 4) setTimeout(resizeCanvas, 150);
-
     }
-
-
 
     async function submit() {
-
         if (signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
-
         const btn = document.getElementById('submit-btn');
-
-        btn.innerText = "Securing Audit Data..."; btn.disabled = true;
-
+        btn.innerText = "Securing Orthopedic Audit Data..."; btn.disabled = true;
         
-
         const dynamicData = {};
-
         document.querySelectorAll('.dynamic-answer').forEach(el => {
-
             dynamicData[el.getAttribute('data-qtext')] = el.value;
-
         });
-
         
-
         const payload = {
-    full_name: (document.getElementById('first_name').value + ' ' + document.getElementById('last_name').value).trim(),
-    first_name: document.getElementById('first_name').value,
-    last_name: document.getElementById('last_name').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    zip_code: document.getElementById('zip_code').value,
-    ssn_last_4: document.getElementById('ssn').value || null, 
-    date_of_birth: document.getElementById('dob').value || null,
-    case_type: document.getElementById('case_type').value,
-    audit_metadata: dynamicData,
-    pathology_impression: document.getElementById('pathology').value,
-    signature_base64: signaturePad.toDataURL(),
-    apollo_form_id: document.getElementById('apollo_form_id').value,
-    submitted_at: new Date().toISOString()
-};
-
+            full_name: (document.getElementById('first_name').value + ' ' + document.getElementById('last_name').value).trim(),
+            first_name: document.getElementById('first_name').value,
+            last_name: document.getElementById('last_name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            zip_code: document.getElementById('zip_code').value,
+            ssn_last_4: document.getElementById('ssn').value || null, 
+            date_of_birth: document.getElementById('dob').value || null,
+            case_type: document.getElementById('case_type').value,
+            audit_metadata: dynamicData,
+            pathology_impression: document.getElementById('pathology').value,
+            signature_base64: signaturePad.toDataURL(),
+            apollo_form_id: document.getElementById('apollo_form_id').value,
+            submitted_at: new Date().toISOString()
+        };
         
-
         try {
-
             const { error } = await _supabase.from('settlement_assets').insert([payload]);
-
             if (error) throw error;
-
-            alert("AUDIT SECURED AND TRANSMITTED."); 
-
+            alert("ORTHOPEDIC INTAKE AUDIT SECURED AND TRANSMITTED."); 
             location.reload();
-
         } catch (err) {
-
             alert("Submission Error: " + err.message); 
-
             btn.disabled = false; btn.innerText = "Submit Final Audit";
-
         }
-
     }
-
 </script>
-
 </body>
-
 </html>
