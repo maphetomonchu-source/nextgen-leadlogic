@@ -8,8 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <style>
         :root { --primary: #0a2540; --accent: #00d4ff; --text: #424770; }
-        body { font-family: 'Inter', sans-serif; background: #f6f9fc; display: flex; justify-content: center; padding: 40px 20px; color: var(--text); }
-        #audit-container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 50px 100px -20px rgba(50,50,93,0.25); max-width: 650px; width: 100%; border-top: 10px solid var(--primary); }
+        body { font-family: 'Inter', sans-serif; background: #f6f9fc; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; color: var(--text); }
+        #audit-container { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 50px 100px -20px rgba(50,50,93,0.25); max-width: 650px; width: 100%; border-top: 10px solid var(--primary); box-sizing: border-box; }
         .step { display: none; }
         .step.active { display: block; }
         .progress-bar { height: 6px; background: #e6ebf1; margin-bottom: 30px; border-radius: 3px; overflow: hidden; }
@@ -18,7 +18,7 @@
         label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: #8898aa; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e6ebf1; border-radius: 4px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
         input:focus, select:focus { border-color: var(--accent); outline: none; }
-        .btn-row { display: flex; justify-content: space-between; margin-top: 20px; }
+        .btn-row { display: flex; justify-content: space-between; margin-top: 20px; gap: 10px; }
         button { padding: 15px 30px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-next { background: var(--primary); color: white; width: 100%; }
@@ -53,6 +53,24 @@
         .section-break { border-top: 2px dashed #e6ebf1; margin: 30px 0; padding-top: 10px; }
         .notice-box { background: #f4f6f8; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid var(--primary); }
         .warning-text { color: #d93838; font-size: 12px; font-weight: bold; display: block; margin: 15px 0; }
+
+        /* Document Preview Screen Styles */
+        #preview-container { display: none; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 50px 100px -20px rgba(50,50,93,0.25); max-width: 750px; width: 100%; margin-top: 20px; box-sizing: border-box; border: 1px solid #e3e8ee; }
+        .doc-header { border-bottom: 2px solid #0a2540; padding-bottom: 15px; margin-bottom: 25px; text-align: center; }
+        .doc-section-title { background: #f4f6f8; padding: 8px 12px; font-size: 14px; color: #0a2540; font-weight: bold; text-transform: uppercase; margin-top: 25px; margin-bottom: 15px; border-left: 3px solid #0a2540; }
+        .doc-table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 20px; }
+        .doc-table td { padding: 8px; border-bottom: 1px solid #e6ebf1; vertical-align: top; }
+        .doc-table td.label-cell { font-weight: bold; color: #8898aa; width: 35%; text-transform: uppercase; font-size: 11px; }
+        .meta-qa-block { padding: 10px 0; border-bottom: 1px dashed #e6ebf1; font-size: 14px; }
+        .meta-q { font-weight: bold; color: #424770; margin-bottom: 4px; }
+        .meta-a { color: #0a2540; font-style: italic; }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            #audit-container { display: none !important; }
+            #preview-container { display: block !important; box-shadow: none; max-width: 100%; padding: 0; border: none; }
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -183,6 +201,80 @@
         </div>
 </div>
 
+<div id="preview-container">
+    <div class="doc-header">
+        <h1 style="font-size: 24px; color: #0a2540; margin: 0 0 5px 0; text-transform: uppercase;">Orthopedic Joint Integrity Registry</h1>
+        <p style="font-size: 12px; color: #6b7c93; margin: 0; font-weight: bold;">OFFICIAL CLAIM INTAKE & PRE-VETTED DISCOVERY PROFILE</p>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7c93; border-bottom: 1px solid #e6ebf1; padding-bottom: 10px; margin-bottom: 20px;">
+        <div><strong>Submission Timestamp:</strong> <span id="doc-timestamp"></span></div>
+        <div><strong>Status:</strong> <span style="color: #00b300; font-weight: bold;">PROCESSED & SECURED</span></div>
+    </div>
+
+    <div class="doc-section-title">1. Claimant Verification Information</div>
+    <table class="doc-table">
+        <tr>
+            <td class="label-cell">Full Legal Name</td>
+            <td id="doc-full-name"></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Email Address</td>
+            <td id="doc-email"></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Phone Number</td>
+            <td id="doc-phone"></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Demographics</td>
+            <td><strong>DOB:</strong> <span id="doc-dob"></span> &nbsp;|&nbsp; <strong>Zip:</strong> <span id="doc-zip"></span> &nbsp;|&nbsp; <strong>SSN (Last 4):</strong> <span id="doc-ssn"></span></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Complications & Symptoms</td>
+            <td id="doc-incident" style="white-space: pre-wrap;"></td>
+        </tr>
+    </table>
+
+    <div class="doc-section-title">2. Case Location & Milestone Timelines</div>
+    <table class="doc-table">
+        <tr>
+            <td class="label-cell">Anatomical Focus</td>
+            <td id="doc-case-type"></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Initial Surgery Date</td>
+            <td id="doc-exposure-date"></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Revision / Onset Date</td>
+            <td id="doc-injury-date"></td>
+        </tr>
+    </table>
+
+    <div class="doc-section-title">3. Dynamic Valuation Questionnaire Answers</div>
+    <div id="doc-quiz-results" style="padding: 0 10px;"></div>
+
+    <div class="doc-section-title">4. Medical Device Details & Pathology Notes</div>
+    <div id="doc-pathology" style="padding: 10px; background: #f8fafd; border-radius: 4px; font-size: 14px; min-height: 50px; white-space: pre-wrap; margin-bottom: 20px;"></div>
+
+    <div class="doc-section-title">5. Electronic Certification Sign-Off</div>
+    <p style="font-size: 11px; color: #6b7c93; text-align: justify; line-height: 1.5;">
+        By providing the digital signature rendered below, the claimant certifies that the personal details, execution timestamps, tracking indices, and medical history metrics contained herein are comprehensive, true, and accurately verified.
+    </p>
+
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; margin-top: 30px; border-top: 1px solid #e6ebf1; padding-top: 20px;">
+        <div style="border: 1px dashed #0a2540; padding: 10px; background: #fff; width: 320px; border-radius: 4px;">
+            <span style="font-size: 9px; text-transform: uppercase; color: #8898aa; display: block; margin-bottom: 5px; font-weight: bold;">Authenticated Handwriting Sample:</span>
+            <img id="doc-signature-img" src="" alt="Claimant Electronic Signature" style="max-width: 100%; max-height: 100px; display: block; margin: 0 auto;" />
+        </div>
+        <div class="no-print" style="display: flex; gap: 10px;">
+            <button onclick="window.print()" style="background: var(--primary); color: white; padding: 12px 25px;">Print / Save PDF</button>
+            <button onclick="location.reload()" style="background: #e6ebf1; color: var(--text); padding: 12px 25px;">Fill New Form</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let _supabase, signaturePad;
     const canvas = document.getElementById('signature-pad');
@@ -286,6 +378,40 @@
         if (s === 4) setTimeout(resizeCanvas, 150);
     }
 
+    function showDocumentPreview(payload, signatureDataUrl) {
+        // Map data directly into the preview document structure
+        document.getElementById('doc-timestamp').innerText = new Date(payload.submitted_at).toLocaleString();
+        document.getElementById('doc-full-name').innerText = payload.full_name;
+        document.getElementById('doc-email').innerText = payload.email;
+        document.getElementById('doc-phone').innerText = payload.phone;
+        document.getElementById('doc-dob').innerText = payload.date_of_birth || 'Not Given';
+        document.getElementById('doc-zip').innerText = payload.zip_code || 'Not Given';
+        document.getElementById('doc-ssn').innerText = payload.ssn_last_4 ? '***-**-' + payload.ssn_last_4 : 'Not Given';
+        document.getElementById('doc-incident').innerText = payload.incident_description || 'None provided.';
+        document.getElementById('doc-case-type').innerText = payload.case_type === 'ORTHO_KNEE' ? 'Total Knee Replacement / Revision' : 'Total Hip Replacement / Revision';
+        document.getElementById('doc-exposure-date').innerText = payload.exposure_date || 'Not Given';
+        document.getElementById('doc-injury-date').innerText = payload.injury_date || 'Not Given';
+        document.getElementById('doc-pathology').innerText = payload.pathology_impression || 'No custom pathological notes written.';
+        
+        // Render dynamic questionnaire objects elegantly
+        const quizContainer = document.getElementById('doc-quiz-results');
+        quizContainer.innerHTML = '';
+        for (const [question, answer] of Object.entries(payload.audit_metadata)) {
+            const block = document.createElement('div');
+            block.className = 'meta-qa-block';
+            block.innerHTML = `<div class="meta-q">${question}</div><div class="meta-a">→ ${answer}</div>`;
+            quizContainer.appendChild(block);
+        }
+
+        // Render the raw digital signature ink stream directly into the img container
+        document.getElementById('doc-signature-img').src = signatureDataUrl;
+
+        // Toggle windows smoothly
+        document.getElementById('audit-container').style.display = 'none';
+        document.getElementById('preview-container').style.display = 'block';
+        window.scrollTo(0,0);
+    }
+
     async function submit() {
         if (signaturePad.isEmpty()) { alert("Digital Signature Required."); return; }
         const btn = document.getElementById('submit-btn');
@@ -296,7 +422,7 @@
             dynamicData[el.getAttribute('data-qtext')] = el.value;
         });
         
-        // Assembled complete payload capturing all fields to match SQL structure
+        const signatureUrl = signaturePad.toDataURL();
         const payload = {
             full_name: (document.getElementById('first_name').value + ' ' + document.getElementById('last_name').value).trim(),
             first_name: document.getElementById('first_name').value,
@@ -314,9 +440,8 @@
             
             audit_metadata: dynamicData,
             pathology_impression: document.getElementById('pathology').value,
-            signature_base64: signaturePad.toDataURL(),
+            signature_base64: signatureUrl,
             
-            // Connected missing tracking values to hidden inputs
             form_id: document.getElementById('form_id').value,
             apollo_form_id: document.getElementById('apollo_form_id').value,
             handling_firm: document.getElementById('handling_firm').value,
@@ -330,8 +455,9 @@
         try {
             const { error } = await _supabase.from('settlement_assets').insert([payload]);
             if (error) throw error;
-            alert("ORTHOPEDIC INTAKE AUDIT SECURED AND TRANSMITTED."); 
-            location.reload();
+            
+            // Instead of reloading, load the pre-vetted proof form directly
+            showDocumentPreview(payload, signatureUrl);
         } catch (err) {
             alert("Submission Error: " + err.message); 
             btn.disabled = false; btn.innerText = "Submit Final Audit";
